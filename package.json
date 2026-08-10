@@ -1,0 +1,9 @@
+{
+  "name": "capilario",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Capilario — analyse capillaire par IA",
+  "engines": {
+    "node": ">=18.x"
+  }
+}

@@ -1,0 +1,16 @@
+CAPILARIO — dossier prêt à déployer (gratuit)
+=============================================
+
+Contenu :
+  index.html            -> le site
+  api/analyze.js        -> analyse IA de la photo
+  api/send-report.js    -> envoi du bilan gratuit par email
+  package.json          -> réglage technique (ne pas y toucher)
+
+Variables d'environnement à mettre sur Vercel :
+  ANTHROPIC_API_KEY  = ta clé Anthropic (sk-ant-...)   [analyse IA]
+  RESEND_API_KEY     = ta clé Resend (re_...)          [envoi email]
+  MAIL_FROM          = "Capilario <bilan@capilario.com>"  (quand ton domaine est vérifié)
+  SITE_URL           = https://capilario.vercel.app   (ou ton domaine)
+
+Après toute modif des fichiers OU des variables : redéploie.
