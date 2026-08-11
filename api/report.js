@@ -23,7 +23,9 @@ Réponds STRICTEMENT en JSON valide, sans texte autour ni Markdown, avec ce sch�
   "cautions": ["point de vigilance court", "..."],
   "outlook": "1 à 2 phrases sur l'évolution probable avec une routine régulière, orientée soin"
 }
-Donne 3 à 5 produits et 2 à 4 points de vigilance.`;
+Donne 3 à 5 produits et 2 à 4 points de vigilance.
+
+Format OBLIGATOIRE : réponds en JSON minifié sur une seule ligne. Aucun retour à la ligne dans les valeurs. N'utilise jamais de guillemets doubles (") à l'intérieur des textes. Aucune virgule après le dernier élément d'une liste ou d'un objet. Rien d'autre que le JSON.`;
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -79,14 +81,51 @@ module.exports = async (req, res) => {
     }
 
     const out = await apiRes.json();
-    let text = (out.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
-    text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    let rawText = (out.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
 
-    let report;
-    try { report = JSON.parse(text); }
-    catch (e) {
-      const s = text.indexOf('{'), en = text.lastIndexOf('}');
-      report = JSON.parse(text.slice(s, en + 1));
+    // --- lecture robuste du JSON ---
+    function extractJson(text){
+      let t = String(text || '').replace(/```json/gi, '').replace(/```/g, '').trim();
+      const s = t.indexOf('{'), e = t.lastIndexOf('}');
+      if (s >= 0 && e > s) t = t.slice(s, e + 1);
+      t = t.replace(/,(\s*[}\]])/g, '$1'); // vire les virgules en trop avant } ou ]
+      return t;
+    }
+    function tryParse(text){
+      try { return JSON.parse(text); } catch (e) {}
+      try { return JSON.parse(extractJson(text)); } catch (e) {}
+      return null;
+    }
+
+    let report = tryParse(rawText);
+
+    // Si le JSON est cassé, on demande au modèle de le réparer (rapide, une fois)
+    if (!report) {
+      try {
+        const fixRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 1400,
+            system: 'On te donne un texte censé être du JSON mais invalide. Renvoie UNIQUEMENT le même contenu en JSON strictement valide et minifié, sans aucun texte autour.',
+            messages: [{ role: 'user', content: rawText }]
+          })
+        });
+        if (fixRes.ok) {
+          const fj = await fixRes.json();
+          const ft = (fj.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+          report = tryParse(ft);
+        }
+      } catch (e) {}
+    }
+
+    if (!report) {
+      return res.status(502).json({ error: 'Format de bilan invalide', detail: rawText.slice(0, 300) });
     }
 
     // on renvoie aussi le teaser pour l'affichage
