@@ -540,8 +540,8 @@ async function submitAnalysis(){
   goScreen('analysis','fwd');
   playScanSequence();
   let result;
-  try{ result=await analyzeHair(state.answers,state.photo); }
-  catch(e){ result=mockResult(); }
+  try{ result=await analyzeHair(state.answers,state.photo); state.debugError=null; }
+  catch(e){ result=mockResult(); state.debugError=String(e.message||e); }
   state.result=result;
   // wait until the scan animation has fully played
   setTimeout(()=>renderResult(result), 4200);
@@ -571,7 +571,7 @@ async function analyzeHair(answers,photo){
   const ENDPOINT='/api/analyze'; // backend Vercel (même domaine → aucun souci de connexion)
   if(!ENDPOINT) throw new Error('backend-not-wired');
   const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers,photo})});
-  if(!res.ok) throw new Error('backend-error');
+  if(!res.ok){ let d=''; try{ d=await res.text(); }catch(e){} throw new Error('HTTP '+res.status+' · '+d); }
   return res.json();
 }
 function zoneLabel(z){ return ({golfes:'Golfes / tempes',sommet:'Sommet du crâne',frontale:'Ligne frontale',densite:'Densité générale',barbe:'Barbe'})[z]||'—'; }
@@ -586,6 +586,18 @@ function mockResult(){
     zone:zoneLabel(a.zone), densityIndex:density, stage:stage[a.duree]||'—', hairType:type[a.type]||'—', follicles:1284 };
 }
 
+/* ---- debug banner (temporaire) ---- */
+function showDebug(msg){
+  let b=document.getElementById('debugBanner');
+  if(!b){ b=document.createElement('div'); b.id='debugBanner';
+    b.style.cssText='display:none;margin:14px 0;padding:12px 14px;border-radius:12px;border:1px solid var(--danger);background:rgba(232,138,106,.12);color:#ffd9cc;font-family:var(--mono);font-size:.72rem;line-height:1.5;white-space:pre-wrap;word-break:break-word';
+    const host=document.querySelector('#result .screen-scroll');
+    const brand=host.querySelector('.brand'); brand.insertAdjacentElement('afterend', b);
+  }
+  if(msg){ b.style.display='block'; b.textContent='⚠️ Analyse IA en échec :\n'+String(msg).slice(0,500); }
+  else { b.style.display='none'; }
+}
+
 /* ---- result render + count-up + gauge ---- */
 function renderResult(r){
   document.getElementById('verdictTitle').textContent=r.verdict;
@@ -594,6 +606,7 @@ function renderResult(r){
   document.getElementById('rStage').textContent=r.stage;
   document.getElementById('rType').textContent=r.hairType;
   goScreen('result','fwd');
+  showDebug(state.debugError);
   setTimeout(()=>{
     countUp(document.getElementById('gaugeNum'), r.densityIndex, 900, '');
     countUp(document.getElementById('rFoll'), r.follicles, 900, '');
@@ -618,13 +631,13 @@ async function sendFree(){
   state.email=email;
   try{
     const r=await fetch('/api/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,result:state.result})});
-    if(!r.ok) throw new Error('send-failed');
+    if(!r.ok){ let d=''; try{ d=await r.text(); }catch(_){} throw new Error('HTTP '+r.status+' · '+d); }
     document.getElementById('emailNote').style.display='flex';
   }catch(e){
     inp.style.borderColor='var(--danger)';
     const note=document.getElementById('emailNote');
     note.style.display='flex'; note.style.borderColor='var(--danger)';
-    note.innerHTML='<span style="color:var(--danger)">!</span><span>Envoi impossible pour le moment, réessaie dans un instant.</span>';
+    note.innerHTML='<span style="color:var(--danger)">!</span><span style="font-size:.74rem;font-family:var(--mono);white-space:pre-wrap;word-break:break-word">'+String(e.message||e).slice(0,500)+'</span>';
   }
 }
 </script>
