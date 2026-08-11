@@ -4,7 +4,7 @@ CAPILARIO — dossier prêt à déployer (gratuit)
 Contenu :
   index.html            -> le site
   api/analyze.js        -> analyse IA de la photo
-  api/send-report.js    -> envoi du bilan gratuit par email
+  api/send-report.js    -> envoi du bilan gratuit par email.
   package.json          -> réglage technique (ne pas y toucher)
 
 Variables d'environnement à mettre sur Vercel :
