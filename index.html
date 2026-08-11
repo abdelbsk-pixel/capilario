@@ -377,6 +377,26 @@ h2{ font-family:var(--display); font-weight:600; font-size:1.85rem; line-height:
     </div>
   </section>
 
+  <!-- ============ FULL REPORT (après paiement) ============ -->
+  <section id="fullreport" class="screen">
+    <div class="screen-scroll">
+      <div class="brand"><span class="mark"></span><b>Bilan complet</b></div>
+
+      <div id="frLoading" style="text-align:center;padding:60px 0">
+        <div class="radar" style="width:120px;height:120px;margin:0 auto 22px">
+          <div class="ring"></div><div class="ring"></div><div class="sweep"></div>
+        </div>
+        <div class="verdict" style="font-size:1.2rem">Génération de ton bilan…</div>
+        <div class="meta" style="margin-top:8px">Paiement confirmé · quelques secondes</div>
+      </div>
+
+      <div id="frError" style="display:none;margin:24px 0;padding:16px;border:1px solid var(--danger);
+        border-radius:14px;background:rgba(232,138,106,.1);color:#ffd9cc;font-size:.9rem"></div>
+
+      <div id="frContent" style="display:none"></div>
+    </div>
+  </section>
+
 </div>
 
 <script>
@@ -407,7 +427,7 @@ const STEPS = [
 ];
 
 /* ---- screen transitions ---- */
-const order=['landing','quiz','photo','analysis','result'];
+const order=['landing','quiz','photo','analysis','result','fullreport'];
 let current='landing';
 function goScreen(next,dir='fwd'){
   if(next===current) return;
@@ -623,7 +643,91 @@ function countUp(el,to,dur,suffix){
 }
 
 /* ---- CTAs (wired in later blocks) ---- */
-function goPaid(){ alert('Paiement Stripe à brancher (bloc automatisation + paiement).'); }
+/* ---- CTA paiement Stripe ---- */
+async function goPaid(){
+  try{
+    const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:state.answers,result:state.result,email:state.email})});
+    const d=await r.json();
+    if(!r.ok||!d.url) throw new Error(d.detail||d.error||'checkout-failed');
+    window.location.href=d.url; // → page de paiement Stripe
+  }catch(e){ alert('Paiement indisponible : '+(e.message||e)); }
+}
+
+/* ---- Rapport complet (retour de paiement) ---- */
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showFullReportLoading(){
+  document.getElementById('frLoading').style.display='block';
+  document.getElementById('frError').style.display='none';
+  document.getElementById('frContent').style.display='none';
+  goScreen('fullreport','fwd');
+}
+function showFullReportError(msg){
+  document.getElementById('frLoading').style.display='none';
+  const el=document.getElementById('frError');
+  el.style.display='block';
+  el.textContent='Impossible de générer le bilan : '+String(msg).slice(0,400)+'\nSi tu as bien payé, recharge la page.';
+}
+function renderFullReport(d){
+  document.getElementById('frLoading').style.display='none';
+  const t=d._teaser||{};
+  const routine=(d.routine||[]).map(ph=>`
+    <div style="margin-top:14px">
+      <div style="font-family:var(--mono);font-size:.72rem;color:var(--lime);letter-spacing:.05em;text-transform:uppercase">${esc(ph.phase)}</div>
+      <ul style="margin:8px 0 0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.7">
+        ${(ph.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+  const products=(d.products||[]).map(p=>`
+    <div style="border:1px solid var(--line-2);border-radius:14px;padding:14px 16px;margin-top:10px;background:rgba(255,255,255,.025)">
+      <div style="font-weight:700;font-size:.98rem">${esc(p.type)}</div>
+      <div style="color:var(--muted);font-size:.88rem;margin-top:4px">${esc(p.why)}</div>
+      ${p.how?`<div style="color:var(--gold);font-size:.84rem;margin-top:6px">→ ${esc(p.how)}</div>`:''}
+    </div>`).join('');
+  const cautions=(d.cautions||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+
+  document.getElementById('frContent').innerHTML=`
+    <h2 style="margin:18px 0 10px">${esc(t.verdict||'Ton bilan complet')}</h2>
+    <p class="lead" style="font-size:.98rem">${esc(d.summary||'')}</p>
+
+    <div class="gauge-wrap" style="margin:18px 0">
+      <div class="stat" style="flex:1"><div class="k">Zone</div><div class="v">${esc(t.zone||'—')}</div></div>
+      <div class="stat" style="flex:1"><div class="k">Stade</div><div class="v gold">${esc(t.stage||'—')}</div></div>
+    </div>
+
+    <h2 style="font-size:1.25rem;margin:24px 0 4px">Ta routine sur 90 jours</h2>
+    ${routine}
+
+    <h2 style="font-size:1.25rem;margin:26px 0 4px">Produits & actifs conseillés</h2>
+    ${products}
+
+    <h2 style="font-size:1.25rem;margin:26px 0 8px">Points de vigilance</h2>
+    <ul style="margin:0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.7">${cautions}</ul>
+
+    <div style="margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)">
+      <div style="font-family:var(--mono);font-size:.7rem;color:var(--lime);letter-spacing:.05em;text-transform:uppercase">Évolution probable</div>
+      <p style="color:var(--text);font-size:.95rem;margin-top:8px">${esc(d.outlook||'')}</p>
+    </div>
+
+    <p class="foot-note disclaimer" style="margin:20px 0 8px;text-align:center">Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.</p>
+    <div style="height:12px"></div>`;
+  document.getElementById('frContent').style.display='block';
+  goScreen('fullreport','fwd');
+}
+
+/* ---- Détection du retour de paiement ---- */
+(function initFromUrl(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('paid')==='1' && p.get('session_id')){
+    showFullReportLoading();
+    fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({session_id:p.get('session_id')})})
+      .then(r=>r.json().then(d=>({ok:r.ok,d})))
+      .then(({ok,d})=>{ if(!ok) throw new Error(d.detail||d.error||'report-failed'); renderFullReport(d); })
+      .catch(e=>showFullReportError(e.message||e));
+  }
+})();
 async function sendFree(){
   const inp=document.getElementById('emailInput'), email=inp.value.trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ inp.focus(); inp.style.borderColor='var(--danger)'; return; }
