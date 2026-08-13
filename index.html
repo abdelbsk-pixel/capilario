@@ -584,7 +584,7 @@ async function submitAnalysis(){
   setTimeout(()=>renderResult(result), 4200);
 }
 function playScanSequence(){
-  const steps=['Lecture de la photo…','Observation de la zone…','Estimation de la densité…','Préparation de votre bilan…'];
+  const steps=(window.__scanSteps)||['Lecture de la photo…','Observation de la zone…','Estimation de la densité…','Préparation de votre bilan…'];
   const bar=document.getElementById('scanBar'), log=document.getElementById('analysisLog'), status=document.getElementById('scanStatus');
   let p=0,si=0;
   clearInterval(window.__sc);
@@ -599,7 +599,7 @@ function playScanSequence(){
 /* ---- backend ---- */
 async function analyzeHair(answers,photo){
   const ENDPOINT='/api/analyze';
-  const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers,photo})});
+  const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers,photo,lang:window.LANG||'fr'})});
   if(!res.ok){ let d=''; try{ d=await res.text(); }catch(e){} throw new Error('HTTP '+res.status+' · '+d); }
   return res.json();
 }
@@ -655,7 +655,7 @@ function countUp(el,to,dur,suffix){
 async function goPaid(){
   try{
     const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({answers:state.answers,result:state.result,email:state.email})});
+      body:JSON.stringify({answers:state.answers,result:state.result,email:state.email,lang:window.LANG||'fr'})});
     const d=await r.json();
     if(!r.ok||!d.url) throw new Error(d.detail||d.error||'checkout-failed');
     window.location.href=d.url;
@@ -753,7 +753,7 @@ async function sendFree(){
   inp.style.borderColor='';
   state.email=email;
   try{
-    const r=await fetch('/api/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,result:state.result})});
+    const r=await fetch('/api/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,result:state.result,lang:window.LANG||'fr'})});
     if(!r.ok){ let d=''; try{ d=await r.text(); }catch(_){} throw new Error('HTTP '+r.status+' · '+d); }
     document.getElementById('emailNote').style.display='flex';
   }catch(e){
@@ -763,6 +763,136 @@ async function sendFree(){
     note.innerHTML='<span style="color:var(--danger)">!</span><span style="font-size:.78rem;white-space:pre-wrap;word-break:break-word">'+String(e.message||e).slice(0,500)+'</span>';
   }
 }
+</script>
+<script>
+/* ============ i18n (FR / EN / ES) — traduction de l'interface ============ */
+window.LANG='fr';
+const I18N={
+ fr:{ tag:'Analyse par IA', cap:'Comprendre, pour mieux prendre soin.', lEyebrow:'Analyse capillaire par IA',
+   h1:'Comprenez vos cheveux, en douceur.',
+   lead:'Six questions, une photo. Notre IA observe votre cuir chevelu et vous adresse un bilan de soin personnalisé — offert.',
+   chips:['2 minutes','Sans engagement','Confidentiel'], ctaStart:'Commencer mon analyse',
+   disclaimerLanding:'Capilario propose une analyse cosmétique et de soin. Ce service n\'établit pas de diagnostic médical et ne remplace pas l\'avis d\'un professionnel de santé.',
+   photoEyebrow:'Dernière étape', photoTitle:'Une photo de la zone concernée',
+   camHint:'Cadrez la zone · lumière naturelle de préférence',
+   photoDisclaimer:'Votre photo sert uniquement à l\'analyse et n\'est pas partagée.',
+   btnTake:'Prendre la photo', btnImport:'Importer', btnAnalyze:'Analyser ma photo', btnRetake:'Reprendre',
+   scan:['Lecture de la photo…','Observation de la zone…','Estimation de la densité…','Préparation de votre bilan…'],
+   resultBrand:'Votre bilan', densite:'densité', stats:['Zone analysée','Stade estimé','Type de cheveu','Densité estimée'],
+   lockedBlur:'Protocole de soin sur 90 jours · 3 produits ciblés (huiles, actifs, routine) · Analyse détaillée · Évolution probable et points de vigilance · Sélection de produits adaptés à votre cas.',
+   lockTitle:'Bilan complet', lockMeta:'Analyse détaillée + votre routine sur mesure', pricePill:'Bilan complet · 5 €',
+   sold:['Analyse détaillée de votre zone + stade précis','Routine sur 90 jours, étape par étape','Produits conseillés adaptés à votre type','Points de vigilance et évolution probable'],
+   fieldLabel:'Recevez votre bilan par email', emailPh:'votre@email.com', btnSend:'M\'envoyer le bilan',
+   emailSent:'Bilan envoyé — pensez à vérifier vos spams.',
+   footNote:'Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.',
+   ctaUnlock:'Débloquer mon bilan complet — 5 €',
+   frBrand:'Bilan complet', frLoadingTitle:'Préparation de votre bilan…', frLoadingMeta:'Paiement confirmé · quelques secondes' },
+ en:{ tag:'AI Analysis', cap:'Understand, to care better.', lEyebrow:'AI hair analysis',
+   h1:'Understand your hair, gently.',
+   lead:'Six questions, one photo. Our AI reviews your scalp and sends you a personalized care report — free.',
+   chips:['2 minutes','No commitment','Confidential'], ctaStart:'Start my analysis',
+   disclaimerLanding:'Capilario offers a cosmetic and care analysis. This service does not provide a medical diagnosis and does not replace professional medical advice.',
+   photoEyebrow:'Last step', photoTitle:'A photo of the area',
+   camHint:'Frame the area · natural light preferred',
+   photoDisclaimer:'Your photo is used only for the analysis and is not shared.',
+   btnTake:'Take the photo', btnImport:'Upload', btnAnalyze:'Analyze my photo', btnRetake:'Retake',
+   scan:['Reading the photo…','Observing the area…','Estimating density…','Preparing your report…'],
+   resultBrand:'Your report', densite:'density', stats:['Analyzed area','Estimated stage','Hair type','Estimated density'],
+   lockedBlur:'90-day care protocol · 3 targeted products (oils, actives, routine) · Detailed analysis · Likely evolution and points of caution · Products matched to your case.',
+   lockTitle:'Full report', lockMeta:'Detailed analysis + your tailored routine', pricePill:'Full report · €5',
+   sold:['Detailed analysis of your area + precise stage','90-day routine, step by step','Recommended products for your hair type','Points of caution and likely evolution'],
+   fieldLabel:'Get your report by email', emailPh:'your@email.com', btnSend:'Send me the report',
+   emailSent:'Report sent — please check your spam folder.',
+   footNote:'Cosmetic care analysis. Not a medical opinion.',
+   ctaUnlock:'Unlock my full report — €5',
+   frBrand:'Full report', frLoadingTitle:'Preparing your report…', frLoadingMeta:'Payment confirmed · a few seconds' },
+ es:{ tag:'Análisis por IA', cap:'Entender, para cuidar mejor.', lEyebrow:'Análisis capilar por IA',
+   h1:'Entienda su cabello, con suavidad.',
+   lead:'Seis preguntas, una foto. Nuestra IA observa su cuero cabelludo y le envía un informe de cuidado personalizado — gratis.',
+   chips:['2 minutos','Sin compromiso','Confidencial'], ctaStart:'Comenzar mi análisis',
+   disclaimerLanding:'Capilario ofrece un análisis cosmético y de cuidado. Este servicio no constituye un diagnóstico médico ni sustituye la opinión de un profesional de la salud.',
+   photoEyebrow:'Último paso', photoTitle:'Una foto de la zona',
+   camHint:'Encuadre la zona · luz natural preferible',
+   photoDisclaimer:'Su foto se utiliza únicamente para el análisis y no se comparte.',
+   btnTake:'Tomar la foto', btnImport:'Subir', btnAnalyze:'Analizar mi foto', btnRetake:'Repetir',
+   scan:['Leyendo la foto…','Observando la zona…','Estimando la densidad…','Preparando su informe…'],
+   resultBrand:'Su informe', densite:'densidad', stats:['Zona analizada','Etapa estimada','Tipo de cabello','Densidad estimada'],
+   lockedBlur:'Protocolo de cuidado de 90 días · 3 productos específicos (aceites, activos, rutina) · Análisis detallado · Evolución probable y puntos de atención · Productos adaptados a su caso.',
+   lockTitle:'Informe completo', lockMeta:'Análisis detallado + su rutina personalizada', pricePill:'Informe completo · 5 €',
+   sold:['Análisis detallado de su zona + etapa precisa','Rutina de 90 días, paso a paso','Productos recomendados para su tipo','Puntos de atención y evolución probable'],
+   fieldLabel:'Reciba su informe por email', emailPh:'su@email.com', btnSend:'Enviarme el informe',
+   emailSent:'Informe enviado — revise su carpeta de spam.',
+   footNote:'Análisis cosmético de cuidado. No constituye una opinión médica.',
+   ctaUnlock:'Desbloquear mi informe completo — 5 €',
+   frBrand:'Informe completo', frLoadingTitle:'Preparando su informe…', frLoadingMeta:'Pago confirmado · unos segundos' }
+};
+const STEPS_I18N={
+ fr:[
+  {eyebrow:'Zone',title:'Quelle zone vous préoccupe le plus ?',options:['Les golfes / tempes','Le sommet du crâne','La ligne frontale','La densité générale','La barbe']},
+  {eyebrow:'Ancienneté',title:'Depuis combien de temps ?',options:['Moins de 6 mois','6 à 12 mois','1 à 3 ans','Plus de 3 ans']},
+  {eyebrow:'Antécédents',title:'Des antécédents dans votre famille ?',options:['Oui','Non','Je ne sais pas']},
+  {eyebrow:'Âge',title:'Votre tranche d\'âge ?',options:['18 – 24 ans','25 – 34 ans','35 – 44 ans','45 ans et plus']},
+  {eyebrow:'Objectif',title:'Votre objectif principal ?',options:['Ralentir la chute','Densifier / regarnir','Comprendre ce qui se passe','Entretenir mes cheveux']},
+  {eyebrow:'Nature',title:'Votre type de cheveu ?',options:['Raides','Ondulés','Bouclés','Crépus']} ],
+ en:[
+  {eyebrow:'Area',title:'Which area concerns you most?',options:['Temples / receding','Crown / vertex','Frontal hairline','Overall density','Beard']},
+  {eyebrow:'Duration',title:'How long has it been going on?',options:['Less than 6 months','6 to 12 months','1 to 3 years','More than 3 years']},
+  {eyebrow:'Family history',title:'Any family history?',options:['Yes','No','I don\'t know']},
+  {eyebrow:'Age',title:'Your age range?',options:['18 – 24','25 – 34','35 – 44','45 and over']},
+  {eyebrow:'Goal',title:'Your main goal?',options:['Slow the loss','Add density','Understand what\'s happening','Maintain my hair']},
+  {eyebrow:'Type',title:'Your hair type?',options:['Straight','Wavy','Curly','Coily']} ],
+ es:[
+  {eyebrow:'Zona',title:'¿Qué zona le preocupa más?',options:['Entradas / sienes','Coronilla','Línea frontal','Densidad general','Barba']},
+  {eyebrow:'Antigüedad',title:'¿Desde hace cuánto?',options:['Menos de 6 meses','6 a 12 meses','1 a 3 años','Más de 3 años']},
+  {eyebrow:'Antecedentes',title:'¿Antecedentes en su familia?',options:['Sí','No','No lo sé']},
+  {eyebrow:'Edad',title:'¿Su rango de edad?',options:['18 – 24 años','25 – 34 años','35 – 44 años','45 años o más']},
+  {eyebrow:'Objetivo',title:'¿Su objetivo principal?',options:['Frenar la caída','Dar densidad','Entender qué ocurre','Mantener mi cabello']},
+  {eyebrow:'Tipo',title:'¿Su tipo de cabello?',options:['Liso','Ondulado','Rizado','Muy rizado']} ]
+};
+function setTxt(sel,val){ const el=document.querySelector(sel); if(el&&val!=null) el.textContent=val; }
+function setList(sel,arr,tick){ document.querySelectorAll(sel).forEach((el,i)=>{ if(arr[i]==null)return;
+  el.innerHTML=(tick?'<span class="tick">✓</span> ':'')+arr[i]; }); }
+function applyLang(l){
+  if(!I18N[l]) l='fr'; window.LANG=l; document.documentElement.lang=l;
+  const d=I18N[l]; window.__scanSteps=d.scan;
+  setTxt('#landing .brand .tag',d.tag); setTxt('#landing .hero .cap',d.cap);
+  setTxt('#landing .eyebrow',d.lEyebrow); setTxt('#landing h1',d.h1); setTxt('#landing .lead',d.lead);
+  setList('#landing .trust .chip',d.chips,true);
+  setTxt('#landing .screen-foot .btn-primary',d.ctaStart); setTxt('#landing .screen-foot .disclaimer',d.disclaimerLanding);
+  setTxt('#photo .eyebrow',d.photoEyebrow); setTxt('#photo .q-head h2',d.photoTitle);
+  setTxt('#camHint',d.camHint); setTxt('#photo .disclaimer',d.photoDisclaimer);
+  setTxt('#shutterRow .btn-primary',d.btnTake); setTxt('#shutterRow .btn-ghost',d.btnImport);
+  setTxt('#confirmRow .btn-primary',d.btnAnalyze); setTxt('#confirmRow .btn-ghost',d.btnRetake);
+  setTxt('#scanStatus',d.scan[0]); setTxt('#analysisLog',d.scan[0]);
+  setTxt('#result .brand b',d.resultBrand); setTxt('#result .gauge .num small',d.densite);
+  setList('#result .stat-grid .stat .k',d.stats,false);
+  setTxt('#result .locked .blur',d.lockedBlur); setTxt('#result .locked .lock b',d.lockTitle);
+  setTxt('#result .locked .lock .meta',d.lockMeta); setTxt('#result .price-pill',d.pricePill);
+  setList('#result .sold > div',d.sold,true); setTxt('#result .field label',d.fieldLabel);
+  const em=document.getElementById('emailInput'); if(em) em.placeholder=d.emailPh;
+  const sb=document.querySelector('#result .screen-scroll .btn-ghost'); if(sb) sb.textContent=d.btnSend;
+  const ns=document.querySelector('#emailNote span:last-child'); if(ns) ns.textContent=d.emailSent;
+  setTxt('#result .foot-note',d.footNote); setTxt('#result .screen-foot .btn-primary',d.ctaUnlock);
+  setTxt('#fullreport .brand b',d.frBrand); setTxt('#frLoading .verdict',d.frLoadingTitle); setTxt('#frLoading .meta',d.frLoadingMeta);
+  const si=STEPS_I18N[l];
+  for(let i=0;i<STEPS.length && i<si.length;i++){
+    STEPS[i].eyebrow=si[i].eyebrow; STEPS[i].title=si[i].title;
+    STEPS[i].options.forEach((o,j)=>{ if(si[i].options[j]!=null) o.l=si[i].options[j]; });
+  }
+  if(current==='quiz') renderStep();
+  document.querySelectorAll('#langsel button').forEach(b=>{ const on=b.dataset.l===l;
+    b.style.background=on?'var(--sage)':'transparent'; b.style.color=on?'#fff':'var(--muted)'; });
+}
+(function(){
+  const sel=document.createElement('div'); sel.id='langsel';
+  sel.style.cssText='position:absolute;top:calc(12px + env(safe-area-inset-top));right:16px;z-index:60;display:flex;gap:2px;background:rgba(251,247,239,.92);border:1px solid var(--line);border-radius:100px;padding:3px;box-shadow:0 6px 16px -10px rgba(60,50,35,.4)';
+  ['fr','en','es'].forEach(l=>{ const b=document.createElement('button'); b.textContent=l.toUpperCase(); b.dataset.l=l;
+    b.style.cssText='border:0;background:transparent;font:600 .7rem Inter,system-ui,sans-serif;color:var(--muted);padding:5px 10px;border-radius:100px;cursor:pointer';
+    b.onclick=()=>applyLang(l); sel.appendChild(b); });
+  document.getElementById('app').appendChild(sel);
+  const nav=(navigator.language||'fr').slice(0,2).toLowerCase();
+  applyLang(nav==='en'?'en':(nav==='es'?'es':'fr'));
+})();
 </script>
 <script>
 /* ---- Héro 3D (WebGL) — mèches de cheveux qui ondulent ---- */
