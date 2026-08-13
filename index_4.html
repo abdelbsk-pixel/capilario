@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Capilario — L'analyse capillaire par IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5EFE4; --paper-2:#EFE7D8; --card:#FBF7EF; --surface:#FBF7EF;
+  --ink:#2E2A24; --text:#2E2A24; --muted:#8C857A; --soft:#B4AC9D;
+  --sage:#556053; --sage-dim:#6E7A69; --gold:#B08D57; --lime:#556053; /* accent principal (garde le nom pour compat) */
+  --line:#E6DDCC; --line-2:#EDE6D7; --danger:#C4704F;
+  --r:20px; --ease:cubic-bezier(.33,0,.2,1);
+  --display:'Fraunces',Georgia,serif; --body:'Inter',system-ui,sans-serif; --mono:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--body); color:var(--text); line-height:1.6; overflow:hidden;
+  background:
+    radial-gradient(90% 60% at 50% -10%, #FBF6EC 0%, transparent 60%),
+    radial-gradient(70% 50% at 100% 100%, #EFE7D6 0%, transparent 55%),
+    var(--paper);
+  -webkit-font-smoothing:antialiased;
+}
+.app{
+  position:relative; width:100%; max-width:448px; height:100dvh; margin:0 auto; overflow:hidden;
+  padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+}
+@media(min-width:600px){
+  .app{ height:min(880px,calc(100dvh - 44px)); margin-top:22px; border-radius:30px;
+    background:var(--card); border:1px solid var(--line);
+    box-shadow:0 40px 90px -50px rgba(60,50,35,.5), 0 2px 0 rgba(255,255,255,.5) inset; }
+}
+
+/* ---------- screens & transitions ---------- */
+.screen{ position:absolute; inset:0; display:none; flex-direction:column;
+  transition:transform .5s var(--ease), opacity .45s ease; will-change:transform,opacity; }
+.screen.active{ display:flex }
+.screen-scroll{ flex:1; overflow-y:auto; overflow-x:hidden; padding:0 26px;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.screen-scroll::-webkit-scrollbar{ display:none }
+.screen-foot{ padding:16px 26px calc(22px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--paper) 40%); }
+@media(min-width:600px){ .screen-foot{ background:linear-gradient(180deg,transparent,var(--card) 40%); } }
+@media(prefers-reduced-motion:reduce){ .screen{transition:opacity .25s ease} *{animation-duration:.001s!important} }
+
+/* ---------- atoms ---------- */
+.brand{ display:flex; align-items:center; gap:11px; padding:26px 0 8px }
+.brand svg{ width:26px; height:26px; flex:none }
+.brand b{ font-family:var(--display); font-weight:500; font-size:1.28rem; letter-spacing:.01em; color:var(--ink) }
+.brand .tag{ margin-left:auto; font-size:.6rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--soft); border:1px solid var(--line); border-radius:100px; padding:5px 11px }
+
+.eyebrow{ font-size:.66rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:600 }
+h1{ font-family:var(--display); font-weight:400; font-size:2.75rem; line-height:1.06; letter-spacing:-.015em; color:var(--ink) }
+h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1.14; letter-spacing:-.01em; color:var(--ink) }
+.lead{ color:var(--muted); font-size:1.04rem; line-height:1.6 }
+
+.btn{ appearance:none; border:0; cursor:pointer; font-family:var(--body); font-weight:600; font-size:1rem;
+  border-radius:15px; padding:17px 24px; width:100%; position:relative; overflow:hidden;
+  transition:transform .14s var(--ease), box-shadow .25s, background .25s; }
+.btn:active{ transform:scale(.985) }
+.btn-primary{ background:var(--ink); color:var(--paper); box-shadow:0 14px 30px -14px rgba(46,42,36,.6) }
+.btn-primary:hover{ box-shadow:0 18px 40px -14px rgba(46,42,36,.7) }
+.btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none }
+.btn-ghost:hover{ border-color:var(--sage) }
+.btn .ripple{ position:absolute; border-radius:50%; transform:scale(0); background:rgba(255,255,255,.22);
+  animation:rip .6s var(--ease); pointer-events:none }
+@keyframes rip{ to{transform:scale(2.6);opacity:0} }
+.meta{ font-size:.72rem; letter-spacing:.04em; color:var(--muted) }
+.disclaimer{ font-size:.72rem; color:var(--soft); line-height:1.5 }
+
+.reveal{ opacity:0; transform:translateY(12px); animation:up .8s var(--ease) forwards }
+.reveal.d1{animation-delay:.05s} .reveal.d2{animation-delay:.16s} .reveal.d3{animation-delay:.28s} .reveal.d4{animation-delay:.4s}
+@keyframes up{ to{opacity:1;transform:none} }
+
+/* ---------- landing hero ---------- */
+.hero{ position:relative; height:290px; margin:20px 0 30px; border-radius:var(--r); overflow:hidden;
+  border:1px solid var(--line);
+  background:radial-gradient(120% 100% at 50% 15%, #F7EFE0, #E8DECA) }
+.hero canvas{ position:absolute; inset:0; width:100%; height:100%; display:block }
+.hero .cap{ position:absolute; left:20px; bottom:16px; font-family:var(--display); font-style:italic;
+  font-size:1rem; color:var(--sage); opacity:.92; z-index:2; text-shadow:0 1px 12px rgba(247,239,224,.85) }
+
+.trust{ display:flex; gap:9px; margin-top:22px; flex-wrap:wrap }
+.chip{ display:inline-flex; align-items:center; gap:7px; font-size:.8rem; color:var(--text);
+  background:#FBF7EF; border:1px solid var(--line); border-radius:100px; padding:8px 14px }
+.chip .tick{ color:var(--gold); font-weight:700 }
+
+/* ---------- questionnaire ---------- */
+.topbar{ display:flex; align-items:center; gap:12px; padding:22px 0 6px }
+.back{ background:none; border:1px solid var(--line); color:var(--muted); cursor:pointer; font-size:1.3rem; line-height:1;
+  width:42px; height:42px; border-radius:12px; flex:none; display:grid; place-items:center; transition:.15s }
+.back:hover{ border-color:var(--sage); color:var(--ink) }
+.segs{ flex:1; display:flex; gap:6px }
+.segs i{ flex:1; height:3px; border-radius:3px; background:var(--line); overflow:hidden; position:relative }
+.segs i.done::after,.segs i.cur::after{ content:""; position:absolute; inset:0; background:var(--sage); border-radius:3px;
+  transform-origin:left; animation:fill .5s var(--ease) forwards }
+.segs i.done::after{ animation:none }
+@keyframes fill{ from{transform:scaleX(0)} to{transform:scaleX(1)} }
+.step-count{ font-size:.72rem; color:var(--soft); flex:none; width:34px; text-align:right; letter-spacing:.05em }
+
+.q-head{ margin:34px 0 24px }
+.q-head .eyebrow{ display:block; margin-bottom:12px }
+.options{ display:flex; flex-direction:column; gap:10px }
+.option{ display:flex; align-items:center; gap:14px; padding:18px 20px; border-radius:15px; width:100%;
+  border:1px solid var(--line); background:#FBF7EF; cursor:pointer; text-align:left;
+  color:var(--ink); font-size:1.02rem; font-family:var(--body); transition:all .18s var(--ease);
+  opacity:0; transform:translateY(8px); animation:up .5s var(--ease) forwards }
+.option:hover{ border-color:var(--sage); background:#F7F1E5 }
+.option.sel{ border-color:var(--sage); background:#EFEDE0; box-shadow:0 0 0 3px rgba(85,96,83,.08) }
+.option .ico{ display:none }
+.option .chk{ margin-left:auto; width:22px; height:22px; border-radius:50%; border:1.5px solid var(--line);
+  flex:none; display:grid; place-items:center; transition:all .18s var(--ease) }
+.option.sel .chk{ background:var(--sage); border-color:var(--sage) }
+.option.sel .chk::after{ content:"✓"; color:#fff; font-size:.72rem; font-weight:700 }
+
+/* ---------- photo ---------- */
+.cam-wrap{ position:relative; margin:24px 0; aspect-ratio:3/4; border-radius:var(--r); overflow:hidden;
+  background:#e9e1d2; border:1px solid var(--line) }
+.cam-wrap video,.cam-wrap canvas,.cam-wrap img{ width:100%; height:100%; object-fit:cover; display:block }
+.cam-frame{ position:absolute; inset:18px; border-radius:14px; pointer-events:none }
+.cam-frame span{ position:absolute; width:26px; height:26px; border:1.5px solid rgba(255,255,255,.85) }
+.cam-frame span:nth-child(1){ top:0; left:0; border-right:0; border-bottom:0; border-radius:8px 0 0 0 }
+.cam-frame span:nth-child(2){ top:0; right:0; border-left:0; border-bottom:0; border-radius:0 8px 0 0 }
+.cam-frame span:nth-child(3){ bottom:0; left:0; border-right:0; border-top:0; border-radius:0 0 0 8px }
+.cam-frame span:nth-child(4){ bottom:0; right:0; border-left:0; border-top:0; border-radius:0 0 8px 0 }
+.cam-scan{ position:absolute; left:12%; right:12%; height:1px; background:rgba(255,255,255,.5);
+  box-shadow:0 0 10px rgba(255,255,255,.4); animation:vscan 3.4s ease-in-out infinite }
+@keyframes vscan{ 0%,100%{top:16%} 50%{top:82%} }
+.cam-hint{ position:absolute; bottom:14px; left:0; right:0; text-align:center; font-size:.72rem;
+  color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.5); letter-spacing:.02em }
+.cam-err{ position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:26px;
+  color:var(--muted); font-size:.92rem; background:#efe7d8 }
+
+/* ---------- analysis (calme) ---------- */
+#analysis .screen-scroll{ display:flex; flex-direction:column; justify-content:center; padding-bottom:40px }
+.scan-stage{ position:relative; aspect-ratio:4/5; border-radius:var(--r); overflow:hidden; margin:0 0 26px;
+  border:1px solid var(--line); background:#e9e1d2 }
+.scan-stage img{ width:100%; height:100%; object-fit:cover; filter:saturate(.92) }
+.scan-stage .veil{ position:absolute; inset:0; background:radial-gradient(circle at 50% 45%, transparent 35%, rgba(245,239,228,.55)) }
+.scan-stage .halo{ position:absolute; top:50%; left:50%; width:120px; height:120px; margin:-60px 0 0 -60px;
+  border-radius:50%; border:1.5px solid var(--gold); opacity:.5; animation:breathe 2.6s ease-in-out infinite }
+.scan-stage .halo::after{ content:""; position:absolute; inset:14px; border-radius:50%; border:1px solid var(--sage); opacity:.5;
+  animation:breathe 2.6s ease-in-out infinite reverse }
+@keyframes breathe{ 0%,100%{transform:scale(.9);opacity:.35} 50%{transform:scale(1.08);opacity:.7} }
+.scan-status{ text-align:center; font-family:var(--display); font-style:italic; font-size:1.35rem; color:var(--ink); margin-bottom:16px }
+.scan-bar{ height:3px; border-radius:3px; background:var(--line); overflow:hidden; max-width:220px; margin:0 auto 14px; width:100% }
+.scan-bar i{ display:block; height:100%; width:0; background:var(--sage); border-radius:3px; transition:width .3s linear }
+.analysis-log{ text-align:center; font-size:.8rem; color:var(--soft); letter-spacing:.03em }
+
+/* ---------- result ---------- */
+.gauge-wrap{ display:flex; align-items:center; gap:20px; margin:22px 0; padding:20px; border-radius:var(--r);
+  border:1px solid var(--line); background:#FBF7EF }
+.gauge{ position:relative; width:96px; height:96px; flex:none }
+.gauge svg{ transform:rotate(-90deg) }
+.gauge .num{ position:absolute; inset:0; display:grid; place-items:center; font-weight:600; font-size:1.5rem; color:var(--sage);
+  font-family:var(--display) }
+.gauge .num small{ font-size:.58rem; color:var(--muted); font-weight:400; letter-spacing:.12em; text-transform:uppercase }
+.gauge-txt .verdict{ font-family:var(--display); font-size:1.35rem; font-weight:500; line-height:1.14; color:var(--ink) }
+.gauge-txt p{ color:var(--muted); font-size:.86rem; margin-top:5px }
+
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:11px; margin:16px 0 }
+.stat{ border:1px solid var(--line); border-radius:15px; padding:16px 17px; background:#FBF7EF }
+.stat .k{ font-size:.66rem; color:var(--soft); margin-bottom:8px; letter-spacing:.14em; text-transform:uppercase }
+.stat .v{ font-family:var(--display); font-weight:500; font-size:1.15rem; color:var(--ink) }
+.stat .v.hi{ color:var(--sage) } .stat .v.gold{ color:var(--gold) }
+
+.locked{ position:relative; margin:16px 0; border:1px solid var(--line); border-radius:16px; padding:24px; overflow:hidden; background:#F3ECDD }
+.locked .blur{ filter:blur(5px); opacity:.55; font-size:.9rem; color:var(--muted); user-select:none; line-height:1.7 }
+.locked .lock{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:6px; text-align:center;
+  background:linear-gradient(180deg,rgba(243,236,221,.35),rgba(243,236,221,.92)) }
+.locked .lock b{ font-family:var(--display); font-weight:500; font-size:1.15rem; color:var(--ink) }
+.price-pill{ display:inline-flex; align-items:center; gap:8px; background:#EFEDE0; border:1px solid var(--sage);
+  color:var(--sage); font-weight:600; padding:8px 16px; border-radius:100px; font-size:.84rem; margin:10px 0 16px; letter-spacing:.02em }
+.sold{ display:flex; flex-direction:column; gap:12px; margin:16px 0 }
+.sold div{ display:flex; gap:12px; font-size:.95rem; align-items:flex-start; color:var(--text) }
+.sold .tick{ color:var(--gold); flex:none; margin-top:1px; font-weight:700 }
+
+.field{ margin:22px 0 12px }
+.field label{ font-size:.82rem; color:var(--muted); display:block; margin-bottom:9px }
+.field input{ width:100%; padding:15px 17px; border-radius:14px; border:1px solid var(--line);
+  background:#FBF7EF; color:var(--ink); font-size:16px; font-family:var(--body) }
+.field input:focus{ outline:none; border-color:var(--sage); background:#fff }
+.emailnote{ display:none; gap:10px; background:#EFEDE0; border:1px solid var(--line);
+  border-radius:13px; padding:14px 16px; font-size:.86rem; color:var(--text); margin-top:12px; align-items:center }
+.emailnote .tick{ color:var(--sage); font-weight:700 }
+.foot-note{ margin:20px 0 8px; text-align:center }
+
+/* ---------- full report loading ---------- */
+.radar{ position:relative }
+.radar .ring{ position:absolute; inset:0; border:1px solid var(--line); border-radius:50% }
+.radar .ring:nth-child(2){ inset:16px }
+.radar .sweep{ position:absolute; inset:0; border-radius:50%; border:1.5px solid var(--gold); border-top-color:transparent;
+  animation:spin 1.4s linear infinite }
+@keyframes spin{ to{transform:rotate(360deg)} }
+.verdict{ font-family:var(--display); font-weight:500; color:var(--ink) }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ============ LANDING ============ -->
+  <section id="landing" class="screen active" style="transform:none;opacity:1">
+    <div class="screen-scroll">
+      <div class="brand reveal d1">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4C13 12 9 18 9 24a11 11 0 0 0 22 0c0-6-4-12-11-20Z" fill="#EFEDE0" stroke="#556053" stroke-width="1.4"/>
+          <path d="M20 9c-4 5-6 9-6 13" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <b>Capilario</b><span class="tag">Analyse par IA</span>
+      </div>
+
+      <div class="hero reveal d2">
+        <canvas id="heroCanvas"></canvas>
+        <div class="cap">Comprendre, pour mieux prendre soin.</div>
+      </div>
+
+      <span class="eyebrow reveal d2">Analyse capillaire par IA</span>
+      <h1 class="reveal d3" style="margin-top:14px">Comprenez vos cheveux, en douceur.</h1>
+      <p class="lead reveal d3" style="margin-top:16px">Six questions, une photo. Notre IA observe votre cuir chevelu et vous adresse un bilan de soin personnalisé — offert.</p>
+      <div class="trust reveal d4">
+        <span class="chip"><span class="tick">✓</span> 2 minutes</span>
+        <span class="chip"><span class="tick">✓</span> Sans engagement</span>
+        <span class="chip"><span class="tick">✓</span> Confidentiel</span>
+      </div>
+    </div>
+    <div class="screen-foot">
+      <button class="btn btn-primary" onclick="startQuiz()">Commencer mon analyse</button>
+      <p class="disclaimer" style="margin-top:12px">Capilario propose une analyse cosmétique et de soin. Ce service n'établit pas de diagnostic médical et ne remplace pas l'avis d'un professionnel de santé.</p>
+    </div>
+  </section>
+
+  <!-- ============ QUESTIONNAIRE ============ -->
+  <section id="quiz" class="screen">
+    <div class="screen-scroll">
+      <div class="topbar">
+        <button class="back" onclick="prevStep()" aria-label="Retour">‹</button>
+        <div class="segs" id="segs"></div>
+        <span class="step-count" id="stepCount">1/6</span>
+      </div>
+      <div class="q-head">
+        <span class="eyebrow" id="qEyebrow">Zone</span>
+        <h2 id="qTitle" style="margin-top:12px"></h2>
+      </div>
+      <div class="options" id="qOptions"></div>
+      <div style="height:24px"></div>
+    </div>
+  </section>
+
+  <!-- ============ PHOTO ============ -->
+  <section id="photo" class="screen">
+    <div class="screen-scroll">
+      <div class="topbar">
+        <button class="back" onclick="backToQuiz()" aria-label="Retour">‹</button>
+        <div class="segs"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></div>
+        <span class="step-count">Photo</span>
+      </div>
+      <div class="q-head">
+        <span class="eyebrow">Dernière étape</span>
+        <h2 style="margin-top:12px">Une photo de la zone concernée</h2>
+      </div>
+      <div class="cam-wrap" id="camWrap">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas" hidden></canvas>
+        <div class="cam-frame"><span></span><span></span><span></span><span></span></div>
+        <div class="cam-scan" id="camScan"></div>
+        <div class="cam-hint" id="camHint">Cadrez la zone · lumière naturelle de préférence</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" capture="user" hidden onchange="handleUpload(event)">
+      <p class="disclaimer">Votre photo sert uniquement à l'analyse et n'est pas partagée.</p>
+    </div>
+    <div class="screen-foot">
+      <div id="shutterRow" style="display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="capture()">Prendre la photo</button>
+        <button class="btn btn-ghost" style="width:auto;padding:17px 22px" onclick="triggerUpload()">Importer</button>
+      </div>
+      <div id="confirmRow" style="display:none;gap:12px">
+        <button class="btn btn-primary" onclick="submitAnalysis()">Analyser ma photo</button>
+        <button class="btn btn-ghost" style="width:auto;padding:17px 22px" onclick="retake()">Reprendre</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ANALYSIS ============ -->
+  <section id="analysis" class="screen">
+    <div class="screen-scroll">
+      <div class="scan-stage" id="scanStage">
+        <img id="scanImg" alt="">
+        <div class="veil"></div>
+        <div class="halo"></div>
+      </div>
+      <div class="scan-status" id="scanStatus">Lecture de la photo…</div>
+      <div class="scan-bar"><i id="scanBar"></i></div>
+      <div id="analysisLog" class="analysis-log">Analyse en cours…</div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="result" class="screen">
+    <div class="screen-scroll">
+      <div class="brand"><svg viewBox="0 0 40 40" fill="none"><path d="M20 4C13 12 9 18 9 24a11 11 0 0 0 22 0c0-6-4-12-11-20Z" fill="#EFEDE0" stroke="#556053" stroke-width="1.4"/><path d="M20 9c-4 5-6 9-6 13" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/></svg><b>Votre bilan</b></div>
+
+      <div class="gauge-wrap" style="margin-top:22px">
+        <div class="gauge">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="42" fill="none" stroke="#E6DDCC" stroke-width="6"/>
+            <circle id="gaugeArc" cx="48" cy="48" r="42" fill="none" stroke="var(--lime)" stroke-width="6"
+              stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+          </svg>
+          <div class="num"><span id="gaugeNum">0</span><small>densité</small></div>
+        </div>
+        <div class="gauge-txt">
+          <div class="verdict" id="verdictTitle">—</div>
+          <p id="verdictSub"></p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Zone analysée</div><div class="v" id="rZone">—</div></div>
+        <div class="stat"><div class="k">Stade estimé</div><div class="v gold" id="rStage">—</div></div>
+        <div class="stat"><div class="k">Type de cheveu</div><div class="v" id="rType">—</div></div>
+        <div class="stat"><div class="k">Densité estimée</div><div class="v hi" id="rFoll">—</div></div>
+      </div>
+
+      <div class="locked">
+        <div class="blur">
+          Protocole de soin sur 90 jours · 3 produits ciblés (huiles, actifs, routine) ·
+          Analyse détaillée · Évolution probable et points de vigilance ·
+          Sélection de produits adaptés à votre cas.
+        </div>
+        <div class="lock"><b>Bilan complet</b><span class="meta">Analyse détaillée + votre routine sur mesure</span></div>
+      </div>
+
+      <span class="price-pill">Bilan complet · 5 €</span>
+      <div class="sold">
+        <div><span class="tick">✓</span> Analyse détaillée de votre zone + stade précis</div>
+        <div><span class="tick">✓</span> Routine sur 90 jours, étape par étape</div>
+        <div><span class="tick">✓</span> Produits conseillés adaptés à votre type</div>
+        <div><span class="tick">✓</span> Points de vigilance et évolution probable</div>
+      </div>
+
+      <div class="field">
+        <label for="emailInput">Recevez votre bilan par email</label>
+        <input id="emailInput" type="email" inputmode="email" placeholder="votre@email.com">
+      </div>
+      <button class="btn btn-ghost" onclick="sendFree()">M'envoyer le bilan</button>
+      <div class="emailnote" id="emailNote"><span class="tick">✓</span><span>Bilan envoyé — pensez à vérifier vos spams.</span></div>
+      <p class="foot-note disclaimer">Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.</p>
+      <div style="height:8px"></div>
+    </div>
+    <div class="screen-foot">
+      <button class="btn btn-primary" onclick="goPaid()">Débloquer mon bilan complet — 5 €</button>
+    </div>
+  </section>
+
+  <!-- ============ FULL REPORT (après paiement) ============ -->
+  <section id="fullreport" class="screen">
+    <div class="screen-scroll">
+      <div class="brand"><svg viewBox="0 0 40 40" fill="none"><path d="M20 4C13 12 9 18 9 24a11 11 0 0 0 22 0c0-6-4-12-11-20Z" fill="#EFEDE0" stroke="#556053" stroke-width="1.4"/><path d="M20 9c-4 5-6 9-6 13" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/></svg><b>Bilan complet</b></div>
+
+      <div id="frLoading" style="text-align:center;padding:64px 0">
+        <div class="radar" style="width:96px;height:96px;margin:0 auto 24px">
+          <div class="ring"></div><div class="ring"></div><div class="sweep"></div>
+        </div>
+        <div class="verdict" style="font-size:1.3rem">Préparation de votre bilan…</div>
+        <div class="meta" style="margin-top:8px">Paiement confirmé · quelques secondes</div>
+      </div>
+
+      <div id="frError" style="display:none;margin:24px 0;padding:16px;border:1px solid var(--danger);
+        border-radius:14px;background:#F6E6DE;color:#8a4a30;font-size:.9rem"></div>
+
+      <div id="frContent" style="display:none"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================================
+   CAPILARIO — app flow (identité premium). Logique inchangée.
+   ===================================================================== */
+const state = { answers:{}, photo:null, email:null, result:null };
+
+const STEPS = [
+  { key:'zone', eyebrow:'Zone', title:'Quelle zone vous préoccupe le plus ?', options:[
+    {v:'golfes',l:'Les golfes / tempes',i:''},{v:'sommet',l:'Le sommet du crâne',i:''},
+    {v:'frontale',l:'La ligne frontale',i:''},{v:'densite',l:'La densité générale',i:''},{v:'barbe',l:'La barbe',i:''} ]},
+  { key:'duree', eyebrow:'Ancienneté', title:'Depuis combien de temps ?', options:[
+    {v:'<6m',l:'Moins de 6 mois',i:''},{v:'6-12m',l:'6 à 12 mois',i:''},
+    {v:'1-3a',l:'1 à 3 ans',i:''},{v:'>3a',l:'Plus de 3 ans',i:''} ]},
+  { key:'famille', eyebrow:'Antécédents', title:'Des antécédents dans votre famille ?', options:[
+    {v:'oui',l:'Oui',i:''},{v:'non',l:'Non',i:''},{v:'nsp',l:'Je ne sais pas',i:''} ]},
+  { key:'age', eyebrow:'Âge', title:'Votre tranche d\'âge ?', options:[
+    {v:'18-24',l:'18 – 24 ans',i:''},{v:'25-34',l:'25 – 34 ans',i:''},
+    {v:'35-44',l:'35 – 44 ans',i:''},{v:'45+',l:'45 ans et plus',i:''} ]},
+  { key:'objectif', eyebrow:'Objectif', title:'Votre objectif principal ?', options:[
+    {v:'ralentir',l:'Ralentir la chute',i:''},{v:'densifier',l:'Densifier / regarnir',i:''},
+    {v:'comprendre',l:'Comprendre ce qui se passe',i:''},{v:'entretenir',l:'Entretenir mes cheveux',i:''} ]},
+  { key:'type', eyebrow:'Nature', title:'Votre type de cheveu ?', options:[
+    {v:'raides',l:'Raides',i:''},{v:'ondules',l:'Ondulés',i:''},
+    {v:'boucles',l:'Bouclés',i:''},{v:'crepus',l:'Crépus',i:''} ]},
+];
+
+/* ---- screen transitions ---- */
+const order=['landing','quiz','photo','analysis','result','fullreport'];
+let current='landing';
+function goScreen(next,dir='fwd'){
+  if(next===current) return;
+  const a=document.getElementById(current), b=document.getElementById(next);
+  const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  b.style.transition='none';
+  b.style.transform= reduce?'none':(dir==='fwd'?'translateX(100%)':'translateX(-100%)');
+  b.style.opacity= reduce?'0':'1';
+  b.classList.add('active');
+  b.querySelector('.screen-scroll').scrollTop=0;
+  void b.offsetWidth;
+  b.style.transition='';
+  a.style.transform= reduce?'none':(dir==='fwd'?'translateX(-22%)':'translateX(22%)');
+  a.style.opacity='0';
+  b.style.transform='translateX(0)'; b.style.opacity='1';
+  setTimeout(()=>{ a.classList.remove('active'); a.style.transform=''; a.style.opacity=''; current=next; }, reduce?250:500);
+}
+
+/* ---- ripple on buttons ---- */
+document.addEventListener('pointerdown',e=>{
+  const btn=e.target.closest('.btn'); if(!btn) return;
+  const r=btn.getBoundingClientRect(), s=Math.max(r.width,r.height);
+  const el=document.createElement('span'); el.className='ripple';
+  el.style.width=el.style.height=s+'px';
+  el.style.left=(e.clientX-r.left-s/2)+'px'; el.style.top=(e.clientY-r.top-s/2)+'px';
+  btn.appendChild(el); setTimeout(()=>el.remove(),600);
+});
+
+/* ---- quiz (auto-advance) ---- */
+let stepIndex=0, locking=false;
+function buildSegs(){
+  const s=document.getElementById('segs'); s.innerHTML='';
+  STEPS.forEach((_,i)=>{ const el=document.createElement('i');
+    if(i<stepIndex)el.className='done'; else if(i===stepIndex)el.className='cur'; s.appendChild(el); });
+}
+function startQuiz(){ stepIndex=0; renderStep(); goScreen('quiz','fwd'); }
+function renderStep(){
+  const st=STEPS[stepIndex]; locking=false;
+  document.getElementById('qEyebrow').textContent=st.eyebrow;
+  document.getElementById('qTitle').textContent=st.title;
+  document.getElementById('stepCount').textContent=(stepIndex+1)+'/'+STEPS.length;
+  buildSegs();
+  const wrap=document.getElementById('qOptions'); wrap.innerHTML='';
+  st.options.forEach((o,idx)=>{
+    const b=document.createElement('button'); b.className='option';
+    b.style.animationDelay=(idx*.05)+'s';
+    if(state.answers[st.key]===o.v) b.classList.add('sel');
+    b.innerHTML=`<span class="ico">${o.i}</span><span>${o.l}</span><span class="chk"></span>`;
+    b.onclick=()=>choose(st.key,o.v,b);
+    wrap.appendChild(b);
+  });
+}
+function choose(key,val,el){
+  if(locking) return; locking=true;
+  state.answers[key]=val;
+  document.querySelectorAll('#qOptions .option').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  setTimeout(()=>{
+    if(stepIndex<STEPS.length-1){ stepIndex++; renderStep(); }
+    else { openCamera(); goScreen('photo','fwd'); }
+  },320);
+}
+function prevStep(){ if(stepIndex>0){ stepIndex--; renderStep(); } else goScreen('landing','back'); }
+function backToQuiz(){ stopCamera(); stepIndex=STEPS.length-1; renderStep(); goScreen('quiz','back'); }
+
+/* ---- camera ---- */
+let stream=null;
+async function openCamera(){
+  const video=document.getElementById('video'), wrap=document.getElementById('camWrap');
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});
+    video.srcObject=stream; video.hidden=false;
+  }catch(e){
+    document.getElementById('camScan').style.display='none';
+    document.getElementById('camHint').style.display='none';
+    const err=document.createElement('div'); err.className='cam-err';
+    err.innerHTML='Caméra indisponible.<br>Utilisez « Importer » pour envoyer une photo.';
+    wrap.appendChild(err);
+  }
+}
+function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function capture(){
+  const video=document.getElementById('video'), canvas=document.getElementById('canvas');
+  if(!video.videoWidth){ triggerUpload(); return; }
+  const max=1024, r=Math.min(1, max/Math.max(video.videoWidth,video.videoHeight));
+  canvas.width=Math.round(video.videoWidth*r); canvas.height=Math.round(video.videoHeight*r);
+  canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+  state.photo=canvas.toDataURL('image/jpeg',.82); showPreview(state.photo);
+}
+function triggerUpload(){ document.getElementById('fileInput').click(); }
+function handleUpload(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=async ev=>{ state.photo=await resizeToDataURL(ev.target.result,1024); showPreview(state.photo); }; r.readAsDataURL(f);
+}
+function resizeToDataURL(src,max){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{ const r=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); resolve(c.toDataURL('image/jpeg',.82)); };
+    img.onerror=()=>resolve(src); img.src=src;
+  });
+}
+function showPreview(url){
+  stopCamera();
+  const wrap=document.getElementById('camWrap');
+  document.getElementById('video').hidden=true;
+  document.getElementById('camScan').style.display='none';
+  document.getElementById('camHint').style.display='none';
+  let img=wrap.querySelector('img.preview');
+  if(!img){ img=document.createElement('img'); img.className='preview'; wrap.appendChild(img); }
+  img.src=url;
+  document.getElementById('shutterRow').style.display='none';
+  document.getElementById('confirmRow').style.display='flex';
+}
+function retake(){
+  const wrap=document.getElementById('camWrap'); const img=wrap.querySelector('img.preview'); if(img)img.remove();
+  state.photo=null;
+  document.getElementById('camScan').style.display=''; document.getElementById('camHint').style.display='';
+  document.getElementById('confirmRow').style.display='none';
+  document.getElementById('shutterRow').style.display='flex';
+  openCamera();
+}
+
+/* ---- analysis (calme) ---- */
+async function submitAnalysis(){
+  stopCamera();
+  document.getElementById('scanImg').src=state.photo;
+  goScreen('analysis','fwd');
+  playScanSequence();
+  let result;
+  try{ result=await analyzeHair(state.answers,state.photo); state.debugError=null; }
+  catch(e){ result=mockResult(); state.debugError=String(e.message||e); }
+  state.result=result;
+  setTimeout(()=>renderResult(result), 4200);
+}
+function playScanSequence(){
+  const steps=['Lecture de la photo…','Observation de la zone…','Estimation de la densité…','Préparation de votre bilan…'];
+  const bar=document.getElementById('scanBar'), log=document.getElementById('analysisLog'), status=document.getElementById('scanStatus');
+  let p=0,si=0;
+  clearInterval(window.__sc);
+  window.__sc=setInterval(()=>{
+    p=Math.min(100,p+Math.random()*6+2.5); bar.style.width=p+'%';
+    const idx=Math.min(steps.length-1,Math.floor(p/25));
+    if(idx!==si){ si=idx; log.textContent=steps[idx]; status.textContent=steps[idx]; }
+    if(p>=100) clearInterval(window.__sc);
+  },180);
+}
+
+/* ---- backend ---- */
+async function analyzeHair(answers,photo){
+  const ENDPOINT='/api/analyze';
+  const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers,photo})});
+  if(!res.ok){ let d=''; try{ d=await res.text(); }catch(e){} throw new Error('HTTP '+res.status+' · '+d); }
+  return res.json();
+}
+function zoneLabel(z){ return ({golfes:'Golfes / tempes',sommet:'Sommet du crâne',frontale:'Ligne frontale',densite:'Densité générale',barbe:'Barbe'})[z]||'—'; }
+function mockResult(){
+  const a=state.answers;
+  const verdict={golfes:'Léger recul fronto-temporal',sommet:'Éclaircissement du vertex',frontale:'Affinement frontal',densite:'Densité en légère baisse',barbe:'Densité de barbe irrégulière'};
+  const type={raides:'Raides',ondules:'Ondulés',boucles:'Bouclés',crepus:'Crépus'};
+  const stage={'<6m':'Précoce','6-12m':'Précoce à modéré','1-3a':'Modéré','>3a':'Installé'};
+  const density=a.duree==='>3a'?54:a.duree==='1-3a'?63:71;
+  return { verdict:verdict[a.zone]||'Analyse capillaire',
+    subtitle:'Votre profil montre des signes exploitables — une routine ciblée peut faire la différence.',
+    zone:zoneLabel(a.zone), densityIndex:density, stage:stage[a.duree]||'—', hairType:type[a.type]||'—', follicles:density };
+}
+
+/* ---- debug banner (temporaire) ---- */
+function showDebug(msg){
+  let b=document.getElementById('debugBanner');
+  if(!b){ b=document.createElement('div'); b.id='debugBanner';
+    b.style.cssText='display:none;margin:14px 0;padding:12px 14px;border-radius:12px;border:1px solid var(--danger);background:#F6E6DE;color:#8a4a30;font-size:.72rem;line-height:1.5;white-space:pre-wrap;word-break:break-word';
+    const host=document.querySelector('#result .screen-scroll');
+    const brand=host.querySelector('.brand'); brand.insertAdjacentElement('afterend', b);
+  }
+  if(msg){ b.style.display='block'; b.textContent='⚠️ Analyse IA indisponible : '+String(msg).slice(0,500); }
+  else { b.style.display='none'; }
+}
+
+/* ---- result render ---- */
+function renderResult(r){
+  document.getElementById('verdictTitle').textContent=r.verdict;
+  document.getElementById('verdictSub').textContent=r.subtitle;
+  document.getElementById('rZone').textContent=r.zone;
+  document.getElementById('rStage').textContent=r.stage;
+  document.getElementById('rType').textContent=r.hairType;
+  goScreen('result','fwd');
+  showDebug(state.debugError);
+  setTimeout(()=>{
+    countUp(document.getElementById('gaugeNum'), r.densityIndex, 1000, '');
+    countUp(document.getElementById('rFoll'), r.densityIndex, 1000, ' / 100');
+    const arc=document.getElementById('gaugeArc'), C=264;
+    arc.style.transition='stroke-dashoffset 1.1s var(--ease)';
+    arc.style.strokeDashoffset = C - (C*r.densityIndex/100);
+  },280);
+}
+function countUp(el,to,dur,suffix){
+  const start=performance.now();
+  function tick(t){ const p=Math.min(1,(t-start)/dur); el.textContent=Math.round(to*(1-Math.pow(1-p,3)))+(suffix||'');
+    if(p<1)requestAnimationFrame(tick); }
+  requestAnimationFrame(tick);
+}
+
+/* ---- CTA paiement Stripe ---- */
+async function goPaid(){
+  try{
+    const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({answers:state.answers,result:state.result,email:state.email})});
+    const d=await r.json();
+    if(!r.ok||!d.url) throw new Error(d.detail||d.error||'checkout-failed');
+    window.location.href=d.url;
+  }catch(e){ alert('Paiement indisponible : '+(e.message||e)); }
+}
+
+/* ---- Rapport complet (retour de paiement) ---- */
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showFullReportLoading(){
+  document.getElementById('frLoading').style.display='block';
+  document.getElementById('frError').style.display='none';
+  document.getElementById('frContent').style.display='none';
+  goScreen('fullreport','fwd');
+}
+function showFullReportError(msg){
+  document.getElementById('frLoading').style.display='none';
+  const el=document.getElementById('frError');
+  el.style.display='block';
+  el.textContent='Impossible de générer le bilan : '+String(msg).slice(0,400)+'\nSi vous avez bien payé, rechargez la page.';
+}
+function renderFullReport(d){
+  document.getElementById('frLoading').style.display='none';
+  const t=d._teaser||{};
+  const routine=(d.routine||[]).map(ph=>`
+    <div style="margin-top:16px">
+      <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600">${esc(ph.phase)}</div>
+      <ul style="margin:9px 0 0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.8">
+        ${(ph.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}
+      </ul>
+    </div>`).join('');
+  const products=(d.products||[]).map(p=>`
+    <div style="border:1px solid var(--line);border-radius:15px;padding:16px 18px;margin-top:11px;background:#FBF7EF">
+      <div style="font-family:var(--display);font-weight:500;font-size:1.05rem;color:var(--ink)">${esc(p.type)}</div>
+      <div style="color:var(--muted);font-size:.9rem;margin-top:5px">${esc(p.why)}</div>
+      ${p.how?`<div style="color:var(--gold);font-size:.85rem;margin-top:7px">— ${esc(p.how)}</div>`:''}
+    </div>`).join('');
+  const cautions=(d.cautions||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+
+  document.getElementById('frContent').innerHTML=`
+    <h2 style="margin:20px 0 10px">${esc(t.verdict||'Votre bilan complet')}</h2>
+    <p class="lead" style="font-size:.98rem">${esc(d.summary||'')}</p>
+
+    <div class="gauge-wrap" style="margin:20px 0">
+      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">Zone</div><div class="v">${esc(t.zone||'—')}</div></div>
+      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">Stade</div><div class="v gold">${esc(t.stage||'—')}</div></div>
+    </div>
+
+    <h2 style="font-size:1.3rem;margin:26px 0 4px">Votre routine sur 90 jours</h2>
+    ${routine}
+
+    <h2 style="font-size:1.3rem;margin:28px 0 4px">Produits &amp; actifs conseillés</h2>
+    ${products}
+
+    <h2 style="font-size:1.3rem;margin:28px 0 8px">Points de vigilance</h2>
+    <ul style="margin:0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.8">${cautions}</ul>
+
+    <div style="margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:15px;background:#F3ECDD">
+      <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600">Évolution probable</div>
+      <p style="color:var(--text);font-size:.95rem;margin-top:9px">${esc(d.outlook||'')}</p>
+    </div>
+
+    <p class="foot-note disclaimer" style="margin:22px 0 8px;text-align:center">Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.</p>
+    <div style="height:14px"></div>`;
+  document.getElementById('frContent').style.display='block';
+  goScreen('fullreport','fwd');
+}
+
+/* ---- Détection du retour de paiement ---- */
+(function initFromUrl(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('paid')==='1' && p.get('session_id')){
+    showFullReportLoading();
+    fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({session_id:p.get('session_id')})})
+      .then(r=>r.json().then(d=>({ok:r.ok,d})))
+      .then(({ok,d})=>{ if(!ok) throw new Error(d.detail||d.error||'report-failed'); renderFullReport(d); })
+      .catch(e=>showFullReportError(e.message||e));
+  }
+})();
+
+async function sendFree(){
+  const inp=document.getElementById('emailInput'), email=inp.value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ inp.focus(); inp.style.borderColor='var(--danger)'; return; }
+  inp.style.borderColor='';
+  state.email=email;
+  try{
+    const r=await fetch('/api/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,result:state.result})});
+    if(!r.ok){ let d=''; try{ d=await r.text(); }catch(_){} throw new Error('HTTP '+r.status+' · '+d); }
+    document.getElementById('emailNote').style.display='flex';
+  }catch(e){
+    inp.style.borderColor='var(--danger)';
+    const note=document.getElementById('emailNote');
+    note.style.display='flex'; note.style.borderColor='var(--danger)';
+    note.innerHTML='<span style="color:var(--danger)">!</span><span style="font-size:.78rem;white-space:pre-wrap;word-break:break-word">'+String(e.message||e).slice(0,500)+'</span>';
+  }
+}
+</script>
+<script>
+/* ---- Héro 3D (WebGL) — mèches de cheveux qui ondulent ---- */
+function initHero3D(){
+  const canvas=document.getElementById('heroCanvas');
+  if(!canvas || !window.THREE) return;
+  let renderer;
+  try{ renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true}); }
+  catch(e){ return; } // pas de WebGL → le dégradé du héro reste affiché
+  const mobile=window.matchMedia('(max-width:600px)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(45,1,0.1,100); cam.position.set(0,0.2,6.2);
+
+  // Lumières douces
+  scene.add(new THREE.AmbientLight(0xffffff,.72));
+  const d1=new THREE.DirectionalLight(0xF6D8A6,1.05); d1.position.set(2,3,4); scene.add(d1);
+  const d2=new THREE.DirectionalLight(0x9DB08C,.6); d2.position.set(-3,-1,-1); scene.add(d2);
+
+  // Nappe de mèches (courbes verticales qui ondulent)
+  const group=new THREE.Group(); scene.add(group);
+  const COUNT=mobile?46:90;      // nombre de mèches
+  const SEG=mobile?22:30;        // segments par mèche (souplesse)
+  const H=4.6;                   // hauteur
+  const spanX=7.5;               // largeur de la nappe
+
+  // dégradé de teintes cheveux (châtain chaud → miel → cendré doux)
+  const palette=[0x6B4A32,0x7C5A3C,0x9A6E45,0xB4885A,0x8A6B4E,0xA9855F];
+  const strands=[];
+  for(let i=0;i<COUNT;i++){
+    const geo=new THREE.BufferGeometry();
+    const positions=new Float32Array((SEG+1)*3);
+    geo.setAttribute('position',new THREE.BufferAttribute(positions,3));
+    const col=palette[i%palette.length];
+    const mat=new THREE.LineBasicMaterial({color:col,transparent:true,opacity:0.72});
+    const line=new THREE.Line(geo,mat);
+    const baseX=(i/(COUNT-1)-0.5)*spanX;
+    const z=(Math.random()-0.5)*1.6;
+    const phase=Math.random()*Math.PI*2;
+    const curl=0.5+Math.random()*0.7;
+    strands.push({line,geo,positions,baseX,z,phase,curl});
+    group.add(line);
+  }
+
+  function updateStrands(t){
+    for(const s of strands){
+      const p=s.positions;
+      for(let j=0;j<=SEG;j++){
+        const f=j/SEG;                 // 0 en haut → 1 en bas
+        const y=H*0.5 - f*H;
+        // ondulation : plus ample vers le bas, vague qui se propage
+        const sway=Math.sin(t*0.9 + s.phase + f*3.0*s.curl)*(0.12+f*0.55);
+        const drift=Math.cos(t*0.5 + s.phase*1.3 + f*2.0)*(f*0.22);
+        p[j*3]  = s.baseX + sway;
+        p[j*3+1]= y;
+        p[j*3+2]= s.z + drift;
+      }
+      s.geo.attributes.position.needsUpdate=true;
+    }
+  }
+
+  function size(){ const w=canvas.clientWidth||1, h=canvas.clientHeight||1;
+    renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); }
+  size(); window.addEventListener('resize',size);
+
+  // Parallaxe (souris + inclinaison)
+  let tx=0,ty=0,mx=0,my=0;
+  window.addEventListener('pointermove',e=>{ tx=(e.clientX/window.innerWidth-.5); ty=(e.clientY/window.innerHeight-.5); });
+  window.addEventListener('deviceorientation',e=>{ if(e.gamma!=null){
+    tx=Math.max(-.5,Math.min(.5,e.gamma/45)); ty=Math.max(-.5,Math.min(.5,((e.beta||40)-40)/45)); }});
+
+  const clock=new THREE.Clock();
+  function loop(){
+    requestAnimationFrame(loop);
+    const l=document.getElementById('landing');
+    if(document.hidden || !l || !l.classList.contains('active')) return; // pause hors accueil
+    const t=clock.getElapsedTime();
+    mx+=(tx-mx)*.05; my+=(ty-my)*.05;
+    updateStrands(t + mx*1.2);
+    group.rotation.y=mx*.35;
+    group.rotation.x=my*.18;
+    cam.position.x=mx*.6; cam.lookAt(0,0,0);
+    renderer.render(scene,cam);
+  }
+  loop();
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onload="initHero3D()"></script>
+</body>
+</html>
