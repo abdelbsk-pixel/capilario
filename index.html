@@ -181,6 +181,18 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
 .sold div{ display:flex; gap:12px; font-size:.95rem; align-items:flex-start; color:var(--text) }
 .sold .tick{ color:var(--gold); flex:none; margin-top:1px; font-weight:700 }
 
+/* ---- cartes produits (bilan) ---- */
+.care{ display:flex; flex-direction:column; gap:10px; margin-top:12px }
+.prod{ display:flex; align-items:center; gap:14px; text-decoration:none; color:var(--ink);
+  border:1px solid var(--line); border-radius:15px; padding:13px 15px; background:#FBF7EF; transition:all .18s var(--ease) }
+.prod:hover{ border-color:var(--sage); transform:translateY(-1px); box-shadow:0 10px 22px -14px rgba(60,50,35,.45) }
+.prod-ic{ width:46px; height:46px; flex:none; border-radius:13px; background:#EFEDE0; display:grid; place-items:center }
+.prod-ic svg{ width:25px; height:25px }
+.prod-b{ flex:1; min-width:0 }
+.prod-b b{ font-family:var(--display); font-weight:500; font-size:1.03rem; display:block; line-height:1.2; color:var(--ink) }
+.prod-b small{ color:var(--muted); font-size:.82rem; display:block; margin-top:3px; line-height:1.4 }
+.prod-cta{ flex:none; color:var(--sage); font-weight:600; font-size:.85rem; white-space:nowrap }
+
 .field{ margin:22px 0 12px }
 .field label{ font-size:.82rem; color:var(--muted); display:block; margin-bottom:9px }
 .field input{ width:100%; padding:15px 17px; border-radius:14px; border:1px solid var(--line);
@@ -385,6 +397,33 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
    CAPILARIO — app flow (identité premium). Logique inchangée.
    ===================================================================== */
 const state = { answers:{}, photo:null, email:null, result:null };
+
+/* =========================================================
+   PRODUITS CONSEILLÉS — éditable librement.
+   name : nom affiché · desc : description (cosmétique, sans promesse)
+   type : icône (oil, roller, serum, leaf, shampoo, mask)
+   url  : lien vers la plateforme (ici recherche Amazon, fiable).
+          Remplace par tes propres liens / liens d'affiliation quand tu veux.
+   ========================================================= */
+const CARE_PRODUCTS=[
+  {name:'Huile de ricin', type:'oil', desc:'Huile végétale riche, réputée pour nourrir la fibre et sublimer cheveux et barbe.', url:'https://www.amazon.fr/s?k=huile+de+ricin+bio'},
+  {name:'Derma roller cuir chevelu', type:'roller', desc:'Rouleau à micro-picots pour masser le cuir chevelu et l\'application des soins.', url:'https://www.amazon.fr/s?k=derma+roller+cuir+chevelu'},
+  {name:'Sérum densité — The Ordinary', type:'serum', desc:'Sérum aux peptides, pour l\'entretien et l\'aspect densité des cheveux.', url:'https://www.amazon.fr/s?k=the+ordinary+hair+serum'},
+  {name:'Huile essentielle de romarin', type:'leaf', desc:'Huile essentielle tonifiante, appréciée en soin du cuir chevelu (à diluer).', url:'https://www.amazon.fr/s?k=huile+essentielle+romarin'},
+  {name:'Shampoing doux sans sulfates', type:'shampoo', desc:'Base lavante douce qui respecte le cuir chevelu au quotidien.', url:'https://www.amazon.fr/s?k=shampoing+doux+sans+sulfate'},
+  {name:'Masque nourrissant', type:'mask', desc:'Soin profond pour nourrir et assouplir la fibre capillaire.', url:'https://www.amazon.fr/s?k=masque+capillaire+nourrissant'}
+];
+function productIcon(t){
+  const I={
+    oil:'<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11Z" stroke="#556053" stroke-width="1.4"/><path d="M9 14a3 3 0 0 0 3 3" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>',
+    roller:'<rect x="3.5" y="5" width="9" height="5" rx="2.5" stroke="#556053" stroke-width="1.4"/><path d="M12.5 11l5.5 7" stroke="#556053" stroke-width="1.4" stroke-linecap="round"/><path d="M5 6.2v2.6M7 6.2v2.6M9 6.2v2.6M11 6.2v2.6" stroke="#B08D57" stroke-width="1.1" stroke-linecap="round"/>',
+    serum:'<rect x="8" y="9" width="8" height="11" rx="2" stroke="#556053" stroke-width="1.4"/><path d="M10 9V5h4v4" stroke="#556053" stroke-width="1.4"/><path d="M12 13v4" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>',
+    leaf:'<path d="M5 19c0-7 6-13 14-14-1 8-7 14-14 14Z" stroke="#556053" stroke-width="1.4"/><path d="M12 12c-3 2-5 4-7 7" stroke="#B08D57" stroke-width="1.3" stroke-linecap="round"/>',
+    shampoo:'<rect x="7" y="8" width="10" height="12" rx="2.5" stroke="#556053" stroke-width="1.4"/><path d="M10 8V6h4v2" stroke="#556053" stroke-width="1.4"/><path d="M9.5 4h5" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>',
+    mask:'<rect x="5" y="9" width="14" height="10" rx="2.5" stroke="#556053" stroke-width="1.4"/><path d="M5 9c0-2 3-3 7-3s7 1 7 3" stroke="#B08D57" stroke-width="1.4"/>'
+  };
+  return '<svg viewBox="0 0 24 24" fill="none">'+(I[t]||I.oil)+'</svg>';
+}
 
 const STEPS = [
   { key:'zone', eyebrow:'Zone', title:'Quelle zone vous préoccupe le plus ?', options:[
@@ -655,6 +694,12 @@ function renderFullReport(d){
       ${p.how?`<div style="color:var(--gold);font-size:.85rem;margin-top:7px">— ${esc(p.how)}</div>`:''}
     </div>`).join('');
   const cautions=(d.cautions||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+  const care=CARE_PRODUCTS.map(p=>`
+    <a class="prod" href="${p.url}" target="_blank" rel="noopener nofollow">
+      <span class="prod-ic">${productIcon(p.type)}</span>
+      <span class="prod-b"><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></span>
+      <span class="prod-cta">Voir →</span>
+    </a>`).join('');
 
   document.getElementById('frContent').innerHTML=`
     <h2 style="margin:20px 0 10px">${esc(t.verdict||'Votre bilan complet')}</h2>
@@ -670,6 +715,10 @@ function renderFullReport(d){
 
     <h2 style="font-size:1.3rem;margin:28px 0 4px">Produits &amp; actifs conseillés</h2>
     ${products}
+
+    <h2 style="font-size:1.3rem;margin:30px 0 4px">Notre sélection de soins</h2>
+    <p class="meta" style="margin-bottom:4px">Des produits simples pour composer votre routine.</p>
+    <div class="care">${care}</div>
 
     <h2 style="font-size:1.3rem;margin:28px 0 8px">Points de vigilance</h2>
     <ul style="margin:0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.8">${cautions}</ul>
