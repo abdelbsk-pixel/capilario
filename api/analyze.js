@@ -19,12 +19,27 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
 {
   "verdict": "titre court du phénomène observé (ex: 'Recul fronto-temporal débutant')",
   "subtitle": "une phrase encourageante et orientée soin",
+  "severity": "Légère | Modérée | Marquée",
   "zone": "zone analysée en clair",
   "densityIndex": nombre entier 0-100 (indice indicatif de densité apparente),
   "stage": "Précoce | Précoce à modéré | Modéré | Installé",
   "hairType": "Raides | Ondulés | Bouclés | Crépus",
-  "follicles": nombre entier (estimation indicative de follicules dans le cadre)
-}`;
+  "follicles": nombre entier (estimation indicative de follicules dans le cadre),
+  "indicators": [
+    { "k": "libellé court de l'indicateur", "v": "valeur courte" }
+  ],
+  "analysis": "UN paragraphe d'analyse réel et personnalisé (3 à 5 phrases), rédigé à partir de CE qui est visible sur la photo ET des réponses du questionnaire (zone, ancienneté, âge, type, objectif). Concret, bienveillant, orienté soin. Sans promesse de repousse ni terme médical."
+}
+
+Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes.
+
+IMPORTANT — Langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol.`;
+
+const STAGE_HINT = {
+  fr: 'Précoce | Précoce à modéré | Modéré | Installé',
+  en: 'Early | Early to moderate | Moderate | Established',
+  es: 'Inicial | Inicial a moderado | Moderado | Establecido'
+};
 
 module.exports = async (req, res) => {
   // Autorise l'appel (utile si le site est servi depuis un autre domaine un jour)
@@ -35,7 +50,8 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
 
   try {
-    const { answers = {}, photo = '' } = req.body || {};
+    const { answers = {}, photo = '', lang = 'fr' } = req.body || {};
+    const L = ['fr','en','es'].includes(lang) ? lang : 'fr';
 
     // Sépare le type d'image et les données base64 depuis la "data URL" envoyée par le site
     let media = 'image/jpeg';
@@ -45,9 +61,10 @@ module.exports = async (req, res) => {
     if (!data) return res.status(400).json({ error: 'Photo manquante' });
 
     const userText =
+      'Langue : ' + L + ' (valeurs "stage" attendues : ' + STAGE_HINT[L] + ')\n\n' +
       'Réponses du questionnaire (JSON):\n' +
       JSON.stringify(answers, null, 2) +
-      '\n\nAnalyse la photo ci-jointe selon tes règles et renvoie UNIQUEMENT le JSON du schéma.';
+      '\n\nAnalyse la photo ci-jointe selon tes règles et renvoie UNIQUEMENT le JSON du schéma, avec tous les textes dans la langue "' + L + '".';
 
     // Appel au modèle de vision
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -95,6 +112,10 @@ module.exports = async (req, res) => {
     // garde-fous de type
     parsed.densityIndex = parseInt(parsed.densityIndex, 10) || 0;
     parsed.follicles = parseInt(parsed.follicles, 10) || 0;
+    if (!Array.isArray(parsed.indicators)) parsed.indicators = [];
+    parsed.indicators = parsed.indicators.filter(x => x && x.k && x.v).slice(0, 6);
+    if (typeof parsed.analysis !== 'string') parsed.analysis = '';
+    if (typeof parsed.severity !== 'string') parsed.severity = '';
 
     return res.status(200).json(parsed);
   } catch (err) {

@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
 
   try {
-    const { answers = {}, result = {}, email = '' } = req.body || {};
+    const { answers = {}, result = {}, email = '', lang = 'fr' } = req.body || {};
+    const L = ['fr','en','es'].includes(lang) ? lang : 'fr';
     const site = process.env.SITE_URL || 'https://capilario-pnxy.vercel.app';
 
     const params = new URLSearchParams();
@@ -23,10 +24,12 @@ module.exports = async (req, res) => {
     params.append('cancel_url', site + '/?canceled=1');
     params.append('line_items[0][quantity]', '1');
     params.append('line_items[0][price_data][currency]', 'eur');
-    params.append('line_items[0][price_data][unit_amount]', '500'); // 5,00 €
+    params.append('line_items[0][price_data][unit_amount]', '399'); // 3,99 €
     params.append('line_items[0][price_data][product_data][name]', 'Bilan capillaire complet — Capilario');
     params.append('metadata[a]', JSON.stringify(answers).slice(0, 490));
     params.append('metadata[r]', JSON.stringify(result).slice(0, 490));
+    params.append('metadata[l]', L);
+    params.append('allow_promotion_codes', 'true'); // champ code promo sur la page Stripe
     if (email) params.append('customer_email', email);
 
     const r = await fetch('https://api.stripe.com/v1/checkout/sessions', {

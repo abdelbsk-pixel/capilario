@@ -25,7 +25,9 @@ Réponds STRICTEMENT en JSON valide, sans texte autour ni Markdown, avec ce sch�
 }
 Donne 3 à 5 produits et 2 à 4 points de vigilance.
 
-Format OBLIGATOIRE : réponds en JSON minifié sur une seule ligne. Aucun retour à la ligne dans les valeurs. N'utilise jamais de guillemets doubles (") à l'intérieur des textes. Aucune virgule après le dernier élément d'une liste ou d'un objet. Rien d'autre que le JSON.`;
+Format OBLIGATOIRE : réponds en JSON minifié sur une seule ligne. Aucun retour à la ligne dans les valeurs. N'utilise jamais de guillemets doubles (") à l'intérieur des textes. Aucune virgule après le dernier élément d'une liste ou d'un objet. Rien d'autre que le JSON.
+
+LANGUE : rédige TOUT le contenu (summary, phases de routine, steps, products, cautions, outlook) dans la langue demandée (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol. Traduis aussi les libellés de phase (ex: "Semaines 1-4" → "Weeks 1-4" / "Semanas 1-4").`;
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -45,7 +47,8 @@ module.exports = async (req, res) => {
     );
     const session = await sRes.json();
     if (!sRes.ok) return res.status(502).json({ error: 'Erreur Stripe', detail: JSON.stringify(session) });
-    if (session.payment_status !== 'paid') {
+    // 'paid' = payé ; 'no_payment_required' = code promo 100% (accès gratuit)
+    if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
       return res.status(402).json({ error: 'Paiement non confirmé' });
     }
 
@@ -53,12 +56,14 @@ module.exports = async (req, res) => {
     let answers = {}, result = {};
     try { answers = JSON.parse(session.metadata?.a || '{}'); } catch (e) {}
     try { result = JSON.parse(session.metadata?.r || '{}'); } catch (e) {}
+    const L = ['fr','en','es'].includes(session.metadata?.l) ? session.metadata.l : 'fr';
 
     // 3) Générer le bilan complet
     const userText =
+      'Langue : ' + L + ' (rédige tout le bilan dans cette langue)\n' +
       'Analyse (teaser): ' + JSON.stringify(result) +
       '\nRéponses du questionnaire: ' + JSON.stringify(answers) +
-      '\n\nGénère le bilan complet selon le schéma.';
+      '\n\nGénère le bilan complet selon le schéma, entièrement en langue "' + L + '".';
 
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
