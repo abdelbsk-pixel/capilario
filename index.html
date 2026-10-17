@@ -175,6 +175,34 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
 .locked .lock{ position:absolute; inset:0; display:grid; place-items:center; align-content:center; gap:6px; text-align:center;
   background:linear-gradient(180deg,rgba(243,236,221,.35),rgba(243,236,221,.92)) }
 .locked .lock b{ font-family:var(--display); font-weight:500; font-size:1.15rem; color:var(--ink) }
+
+/* ---- aperçu payant « vitrine » ---- */
+.preview{ margin:18px 0 }
+.pv-eyebrow{ display:block }
+.pv-title{ font-family:var(--display); font-weight:500; font-size:1.35rem; color:var(--ink); margin:8px 0 14px; line-height:1.2 }
+.pv-sheet{ position:relative; border:1px solid var(--line); border-radius:18px; background:#FBF7EF; padding:20px 20px 0; overflow:hidden;
+  max-height:340px; box-shadow:0 12px 30px -20px rgba(60,50,35,.4) }
+.pv-sec{ margin-bottom:20px }
+.pv-lbl{ font-size:.66rem; letter-spacing:.16em; text-transform:uppercase; font-weight:600; color:var(--sage); margin-bottom:10px }
+.sk{ height:10px; border-radius:6px; margin:7px 0;
+  background:linear-gradient(90deg,#ECE4D4 25%,#F3ECDD 37%,#ECE4D4 63%); background-size:400% 100%;
+  animation:shimmer 1.8s ease-in-out infinite }
+.sk.sk-sm{ height:9px; margin:0; flex:1 }
+@keyframes shimmer{ 0%{background-position:100% 0} 100%{background-position:0 0} }
+@media(prefers-reduced-motion:reduce){ .sk{ animation:none } }
+.pv-phases{ display:flex; gap:9px }
+.pv-phase{ flex:1; border:1px solid var(--line); border-radius:12px; padding:12px 8px; text-align:center; background:#fff }
+.pv-phase span{ display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#EFEDE0; color:var(--sage); font-weight:700; font-size:.82rem; margin-bottom:7px }
+.pv-phase i{ display:block; font-style:normal; font-size:.72rem; color:var(--muted) }
+.pv-prods{ display:flex; flex-direction:column; gap:10px }
+.pv-prod{ display:flex; align-items:center; gap:12px }
+.pv-prod svg{ width:34px; height:34px; flex:none; padding:5px; background:#EFEDE0; border-radius:10px }
+.pv-fade{ position:absolute; left:0; right:0; bottom:0; height:150px;
+  background:linear-gradient(180deg, rgba(251,247,239,0), #FBF7EF 62%); display:flex; align-items:flex-end; justify-content:center; padding-bottom:18px }
+.pv-lock{ display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:var(--paper);
+  padding:11px 20px; border-radius:100px; font-size:.92rem; box-shadow:0 10px 24px -12px rgba(46,42,36,.6) }
+.pv-lock b{ font-weight:600 }
+.reassure{ display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; margin:16px 0 6px; font-size:.76rem; color:var(--muted) }
 .price-pill{ display:inline-flex; align-items:center; gap:8px; background:#EFEDE0; border:1px solid var(--sage);
   color:var(--sage); font-weight:600; padding:8px 16px; border-radius:100px; font-size:.84rem; margin:10px 0 16px; letter-spacing:.02em }
 .sold{ display:flex; flex-direction:column; gap:12px; margin:16px 0 }
@@ -339,13 +367,37 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
         <div class="stat"><div class="k">Densité estimée</div><div class="v hi" id="rFoll">—</div></div>
       </div>
 
-      <div class="locked">
-        <div class="blur">
-          Protocole de soin sur 90 jours · 3 produits ciblés (huiles, actifs, routine) ·
-          Analyse détaillée · Évolution probable et points de vigilance ·
-          Sélection de produits adaptés à votre cas.
+      <div class="preview">
+        <span class="eyebrow pv-eyebrow">Aperçu de votre bilan complet</span>
+        <h2 class="pv-title">Votre routine personnalisée est prête</h2>
+        <div class="pv-sheet">
+          <div class="pv-sec">
+            <div class="pv-lbl">Analyse détaillée</div>
+            <div class="sk"></div><div class="sk"></div><div class="sk" style="width:64%"></div>
+          </div>
+          <div class="pv-sec">
+            <div class="pv-lbl">Routine sur 90 jours</div>
+            <div class="pv-phases">
+              <div class="pv-phase"><span>1</span><i class="ph-lbl">Semaines 1-4</i></div>
+              <div class="pv-phase"><span>2</span><i class="ph-lbl">Semaines 5-8</i></div>
+              <div class="pv-phase"><span>3</span><i class="ph-lbl">Semaines 9-12</i></div>
+            </div>
+          </div>
+          <div class="pv-sec">
+            <div class="pv-lbl">Produits conseillés pour vous</div>
+            <div class="pv-prods">
+              <div class="pv-prod"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11Z" stroke="#556053" stroke-width="1.4"/><path d="M9 14a3 3 0 0 0 3 3" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/></svg><div class="sk sk-sm"></div></div>
+              <div class="pv-prod"><svg viewBox="0 0 24 24" fill="none"><rect x="8" y="9" width="8" height="11" rx="2" stroke="#556053" stroke-width="1.4"/><path d="M10 9V5h4v4" stroke="#556053" stroke-width="1.4"/><path d="M12 13v4" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/></svg><div class="sk sk-sm"></div></div>
+              <div class="pv-prod"><svg viewBox="0 0 24 24" fill="none"><path d="M5 19c0-7 6-13 14-14-1 8-7 14-14 14Z" stroke="#556053" stroke-width="1.4"/><path d="M12 12c-3 2-5 4-7 7" stroke="#B08D57" stroke-width="1.3" stroke-linecap="round"/></svg><div class="sk sk-sm"></div></div>
+            </div>
+          </div>
+          <div class="pv-fade"><div class="pv-lock">🔒 <b class="pv-lock-t">Tout débloquer — 5 €</b></div></div>
         </div>
-        <div class="lock"><b>Bilan complet</b><span class="meta">Analyse détaillée + votre routine sur mesure</span></div>
+        <div class="reassure">
+          <span class="rs1">🔒 Paiement sécurisé Stripe</span>
+          <span class="rs2">⚡ Accès immédiat</span>
+          <span class="rs3">✓ Sans abonnement</span>
+        </div>
       </div>
 
       <span class="price-pill">Bilan complet · 5 €</span>
@@ -786,7 +838,11 @@ const I18N={
    emailSent:'Bilan envoyé — pensez à vérifier vos spams.',
    footNote:'Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.',
    ctaUnlock:'Débloquer mon bilan complet — 5 €',
-   frBrand:'Bilan complet', frLoadingTitle:'Préparation de votre bilan…', frLoadingMeta:'Paiement confirmé · quelques secondes' },
+   frBrand:'Bilan complet', frLoadingTitle:'Préparation de votre bilan…', frLoadingMeta:'Paiement confirmé · quelques secondes',
+   pvEyebrow:'Aperçu de votre bilan complet', pvTitle:'Votre routine personnalisée est prête',
+   pvAnalyse:'Analyse détaillée', pvRoutine:'Routine sur 90 jours', pvProducts:'Produits conseillés pour vous',
+   phases:['Semaines 1-4','Semaines 5-8','Semaines 9-12'], pvLock:'Tout débloquer — 5 €',
+   rs1:'🔒 Paiement sécurisé Stripe', rs2:'⚡ Accès immédiat', rs3:'✓ Sans abonnement' },
  en:{ tag:'AI Analysis', cap:'Understand, to care better.', lEyebrow:'AI hair analysis',
    h1:'Understand your hair, gently.',
    lead:'Six questions, one photo. Our AI reviews your scalp and sends you a personalized care report — free.',
@@ -805,7 +861,11 @@ const I18N={
    emailSent:'Report sent — please check your spam folder.',
    footNote:'Cosmetic care analysis. Not a medical opinion.',
    ctaUnlock:'Unlock my full report — €5',
-   frBrand:'Full report', frLoadingTitle:'Preparing your report…', frLoadingMeta:'Payment confirmed · a few seconds' },
+   frBrand:'Full report', frLoadingTitle:'Preparing your report…', frLoadingMeta:'Payment confirmed · a few seconds',
+   pvEyebrow:'Preview of your full report', pvTitle:'Your personalized routine is ready',
+   pvAnalyse:'Detailed analysis', pvRoutine:'90-day routine', pvProducts:'Products recommended for you',
+   phases:['Weeks 1-4','Weeks 5-8','Weeks 9-12'], pvLock:'Unlock everything — €5',
+   rs1:'🔒 Secure Stripe payment', rs2:'⚡ Instant access', rs3:'✓ No subscription' },
  es:{ tag:'Análisis por IA', cap:'Entender, para cuidar mejor.', lEyebrow:'Análisis capilar por IA',
    h1:'Entienda su cabello, con suavidad.',
    lead:'Seis preguntas, una foto. Nuestra IA observa su cuero cabelludo y le envía un informe de cuidado personalizado — gratis.',
@@ -824,7 +884,11 @@ const I18N={
    emailSent:'Informe enviado — revise su carpeta de spam.',
    footNote:'Análisis cosmético de cuidado. No constituye una opinión médica.',
    ctaUnlock:'Desbloquear mi informe completo — 5 €',
-   frBrand:'Informe completo', frLoadingTitle:'Preparando su informe…', frLoadingMeta:'Pago confirmado · unos segundos' }
+   frBrand:'Informe completo', frLoadingTitle:'Preparando su informe…', frLoadingMeta:'Pago confirmado · unos segundos',
+   pvEyebrow:'Vista previa de su informe completo', pvTitle:'Su rutina personalizada está lista',
+   pvAnalyse:'Análisis detallado', pvRoutine:'Rutina de 90 días', pvProducts:'Productos recomendados para usted',
+   phases:['Semanas 1-4','Semanas 5-8','Semanas 9-12'], pvLock:'Desbloquear todo — 5 €',
+   rs1:'🔒 Pago seguro con Stripe', rs2:'⚡ Acceso inmediato', rs3:'✓ Sin suscripción' }
 };
 const STEPS_I18N={
  fr:[
@@ -874,6 +938,11 @@ function applyLang(l){
   const ns=document.querySelector('#emailNote span:last-child'); if(ns) ns.textContent=d.emailSent;
   setTxt('#result .foot-note',d.footNote); setTxt('#result .screen-foot .btn-primary',d.ctaUnlock);
   setTxt('#fullreport .brand b',d.frBrand); setTxt('#frLoading .verdict',d.frLoadingTitle); setTxt('#frLoading .meta',d.frLoadingMeta);
+  setTxt('.pv-eyebrow',d.pvEyebrow); setTxt('.pv-title',d.pvTitle);
+  (function(){ const ls=document.querySelectorAll('.pv-lbl'); if(ls[0])ls[0].textContent=d.pvAnalyse; if(ls[1])ls[1].textContent=d.pvRoutine; if(ls[2])ls[2].textContent=d.pvProducts;
+    document.querySelectorAll('.ph-lbl').forEach((e,i)=>{ if(d.phases[i])e.textContent=d.phases[i]; });
+    const pl=document.querySelector('.pv-lock-t'); if(pl)pl.textContent=d.pvLock;
+    setTxt('.rs1',d.rs1); setTxt('.rs2',d.rs2); setTxt('.rs3',d.rs3); })();
   const si=STEPS_I18N[l];
   for(let i=0;i<STEPS.length && i<si.length;i++){
     STEPS[i].eyebrow=si[i].eyebrow; STEPS[i].title=si[i].title;
