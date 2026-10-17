@@ -6,28 +6,50 @@
 //  paiement confirmé, aucun rapport n'est renvoyé.
 // ============================================================
 
-const SYSTEM = `Tu es l'assistant de Capilario. Tu génères un BILAN CAPILLAIRE COMPLET, cosmétique et de soin — jamais médical, jamais de nom de pathologie, aucune promesse de guérison ni de repousse garantie.
-À partir de l'analyse et des réponses du questionnaire, produis un plan réaliste, concret et bienveillant.
+// Catalogue de produits (vraies marques tendance) — l'IA choisit PARMI ceux-ci, par id.
+// Cadrage cosmétique. Liens fiables (recherche marchande / site marque), éditables.
+// "img" = photo du produit (laisse vide => illustration automatique).
+//   Pour mettre une vraie photo : soit une URL (flux d'affiliation / CDN),
+//   soit dépose le fichier dans /img/ et mets img:'/img/ricin.jpg'.
+//   Si une image casse, le site retombe tout seul sur l'illustration.
+const CATALOG = [
+  { id:'ricin', name:'Huile de ricin', brand:'', type:'oil', url:'https://www.amazon.fr/s?k=huile+de+ricin+bio+cheveux', img:'' },
+  { id:'romarin', name:'Huile de romarin', brand:'', type:'leaf', url:'https://www.amazon.fr/s?k=huile+romarin+cheveux', img:'' },
+  { id:'derma', name:'Derma roller 0,5 mm', brand:'', type:'roller', url:'https://www.amazon.fr/s?k=derma+roller+cuir+chevelu+0.5mm', img:'' },
+  { id:'ordinary-peptide', name:'Multi-Peptide Serum', brand:'The Ordinary', type:'serum', url:'https://www.amazon.fr/s?k=the+ordinary+multi+peptide+hair+density+serum', img:'' },
+  { id:'horace', name:'Soin densité cheveux', brand:'Horace', type:'serum', url:'https://www.horace.co', img:'' },
+  { id:'nioxin', name:'Système densité', brand:'Nioxin', type:'shampoo', url:'https://www.amazon.fr/s?k=nioxin+system', img:'' },
+  { id:'kerastase-genesis', name:'Genesis sérum', brand:'Kérastase', type:'serum', url:'https://www.amazon.fr/s?k=kerastase+genesis+serum', img:'' },
+  { id:'alpecin', name:'Shampoing caféine', brand:'Alpecin', type:'shampoo', url:'https://www.amazon.fr/s?k=alpecin+caffeine+shampoing', img:'' },
+  { id:'sulfate-free', name:'Shampoing doux sans sulfates', brand:'', type:'shampoo', url:'https://www.amazon.fr/s?k=shampoing+doux+sans+sulfate', img:'' },
+  { id:'biotine', name:'Complément biotine & zinc', brand:'', type:'mask', url:'https://www.amazon.fr/s?k=complement+biotine+zinc+cheveux', img:'' },
+  { id:'scalp-serum', name:'Sérum fortifiant cuir chevelu', brand:'', type:'serum', url:'https://www.amazon.fr/s?k=serum+fortifiant+cuir+chevelu', img:'' },
+  { id:'masque', name:'Masque nourrissant intense', brand:'', type:'mask', url:'https://www.amazon.fr/s?k=masque+capillaire+nourrissant', img:'' }
+];
 
-Réponds STRICTEMENT en JSON valide, sans texte autour ni Markdown, avec ce schéma:
+const SYSTEM = `Tu es l'expert soin capillaire de Capilario. Tu génères un BILAN CAPILLAIRE COMPLET, cosmétique et de soin — JAMAIS médical, jamais de nom de pathologie, AUCUNE promesse de guérison ni de "repousse garantie". Tu parles d'aspect, de densité apparente, d'entretien, de fibre capillaire et de cuir chevelu sain.
+Personnalise FORTEMENT selon la zone, l'ancienneté, l'âge, le type de cheveu et l'objectif. Emploie un vocabulaire précis et crédible (fibre capillaire, cuir chevelu, ligne d'implantation, densité apparente, microcirculation, sébum, kératine, cycle pilaire) SANS jamais poser de diagnostic.
+
+PRODUITS : tu choisis UNIQUEMENT parmi le CATALOGUE fourni, par leur "id". Sélectionne 3 à 5 produits réellement pertinents pour CE profil précis et explique, pour chacun, POURQUOI ce produit pour CETTE personne.
+
+Réponds STRICTEMENT en JSON valide (minifié, une seule ligne, pas de guillemets doubles dans les textes, pas de virgule finale), schéma:
 {
-  "summary": "3 à 4 phrases d'analyse détaillée et encourageante",
-  "routine": [
-    { "phase": "Semaines 1-4", "steps": ["étape courte", "étape courte"] },
-    { "phase": "Semaines 5-8", "steps": ["...", "..."] },
-    { "phase": "Semaines 9-12", "steps": ["...", "..."] }
-  ],
-  "products": [
-    { "type": "catégorie ou actif cosmétique (ex: huile de ricin)", "why": "bénéfice cosmétique en une phrase", "how": "conseil d'usage court" }
-  ],
-  "cautions": ["point de vigilance court", "..."],
-  "outlook": "1 à 2 phrases sur l'évolution probable avec une routine régulière, orientée soin"
+ "summary":"5 à 7 phrases d'analyse détaillée, précise et personnalisée (ce qui est observé, ce que ça implique côté soin, et l'approche recommandée)",
+ "keyPoints":[{"title":"titre très court (2-4 mots)","text":"1 phrase clé percutante et personnalisée"}],
+ "scores":[{"label":"Densité apparente","value":72},{"label":"Uniformité","value":60},{"label":"État du cuir chevelu","value":80},{"label":"Ligne d'implantation","value":65},{"label":"Qualité de la fibre","value":70}],
+ "planning":[{"day":"Lundi","action":"geste du jour, court et concret"},{"day":"Mardi","action":"..."},{"day":"Mercredi","action":"..."},{"day":"Jeudi","action":"..."},{"day":"Vendredi","action":"..."},{"day":"Samedi","action":"..."},{"day":"Dimanche","action":"..."}],
+ "routine":[{"phase":"Semaines 1-4","steps":["...","..."]},{"phase":"Semaines 5-8","steps":["...","..."]},{"phase":"Semaines 9-12","steps":["...","..."]}],
+ "products":[{"id":"id du catalogue uniquement","why":"pourquoi ce produit pour cette personne (1 phrase)","how":"conseil d'usage court"}],
+ "dos":["bonne habitude courte et concrète","..."],
+ "donts":["habitude à éviter, courte et concrète (ex: casquette trop serrée au quotidien, lavage tous les jours avec un shampoing agressif)","..."],
+ "cautions":["point de vigilance court","..."],
+ "outlook":"1 à 2 phrases réalistes orientées soin et entretien (jamais de promesse de repousse)"
 }
-Donne 3 à 5 produits et 2 à 4 points de vigilance.
+Donne EXACTEMENT 3 keyPoints, 4 à 6 scores (entiers 0-100), EXACTEMENT 7 jours de planning (lun→dim, un geste réaliste par jour, avec des jours plus légers), 3 phases de routine, 3 à 5 produits (ids du catalogue uniquement), 4 à 6 "dos", 4 à 6 "donts", 2 à 4 points de vigilance. Les conseils dos/donts doivent être personnalisés au profil (zone, type de cheveu, mode de vie) et rester cosmétiques.
 
-Format OBLIGATOIRE : réponds en JSON minifié sur une seule ligne. Aucun retour à la ligne dans les valeurs. N'utilise jamais de guillemets doubles (") à l'intérieur des textes. Aucune virgule après le dernier élément d'une liste ou d'un objet. Rien d'autre que le JSON.
+Format OBLIGATOIRE : JSON minifié sur une seule ligne, pas de guillemets doubles à l'intérieur des textes, pas de virgule finale, rien d'autre que le JSON.
 
-LANGUE : rédige TOUT le contenu (summary, phases de routine, steps, products, cautions, outlook) dans la langue demandée (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol. Traduis aussi les libellés de phase (ex: "Semaines 1-4" → "Weeks 1-4" / "Semanas 1-4").`;
+LANGUE : rédige TOUT (summary, keyPoints, scores.label, planning.day + planning.action, phases, steps, why, how, dos, donts, cautions, outlook) dans la langue demandée (fr = français, en = anglais, es = espagnol, de = allemand). Traduis les libellés de jour (Lundi→Monday/Lunes/Montag) et de phase.`;
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -56,14 +78,22 @@ module.exports = async (req, res) => {
     let answers = {}, result = {};
     try { answers = JSON.parse(session.metadata?.a || '{}'); } catch (e) {}
     try { result = JSON.parse(session.metadata?.r || '{}'); } catch (e) {}
-    const L = ['fr','en','es'].includes(session.metadata?.l) ? session.metadata.l : 'fr';
+    const L = ['fr','en','es','de'].includes(session.metadata?.l) ? session.metadata.l : 'fr';
 
     // 3) Générer le bilan complet
+    const catalogForAI = CATALOG.map(p => ({
+      id: p.id,
+      nom: (p.brand ? p.brand + ' — ' : '') + p.name,
+      type: p.type
+    }));
     const userText =
       'Langue : ' + L + ' (rédige tout le bilan dans cette langue)\n' +
       'Analyse (teaser): ' + JSON.stringify(result) +
       '\nRéponses du questionnaire: ' + JSON.stringify(answers) +
-      '\n\nGénère le bilan complet selon le schéma, entièrement en langue "' + L + '".';
+      '\n\nCATALOGUE DISPONIBLE (choisis 3 à 5 produits UNIQUEMENT via leur "id") :\n' +
+      JSON.stringify(catalogForAI) +
+      '\n\nGénère le bilan complet selon le schéma, entièrement en langue "' + L + '". ' +
+      'Dans "products", ne mets que des objets {id, why, how} où "id" existe dans le catalogue ci-dessus.';
 
     const apiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -74,7 +104,7 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',   // rapport payant → modèle plus qualitatif
-        max_tokens: 1400,
+        max_tokens: 2800,
         system: SYSTEM,
         messages: [{ role: 'user', content: userText }]
       })
@@ -133,8 +163,78 @@ module.exports = async (req, res) => {
       return res.status(502).json({ error: 'Format de bilan invalide', detail: rawText.slice(0, 300) });
     }
 
-    // on renvoie aussi le teaser pour l'affichage
+    // --- Normalisation / garde-fous ---
+    const asStrArr = (a, n) => (Array.isArray(a) ? a : [])
+      .filter(x => typeof x === 'string' && x.trim()).slice(0, n);
+
+    // keyPoints : [{title, text}]
+    if (!Array.isArray(report.keyPoints)) report.keyPoints = [];
+    report.keyPoints = report.keyPoints
+      .filter(k => k && (k.title || k.text))
+      .map(k => ({ title: String(k.title || ''), text: String(k.text || '') }))
+      .slice(0, 4);
+
+    // planning : [{day, action}]
+    if (!Array.isArray(report.planning)) report.planning = [];
+    report.planning = report.planning
+      .filter(p => p && (p.day || p.action))
+      .map(p => ({ day: String(p.day || ''), action: String(p.action || '') }))
+      .slice(0, 7);
+
+    // dos / donts
+    report.dos = asStrArr(report.dos, 6);
+    report.donts = asStrArr(report.donts, 6);
+
+    // Scores : tableau d'objets {label, value 0-100}
+    if (!Array.isArray(report.scores)) report.scores = [];
+    report.scores = report.scores
+      .filter(s => s && typeof s.label === 'string')
+      .map(s => {
+        let v = parseInt(s.value, 10);
+        if (isNaN(v)) v = 0;
+        v = Math.max(0, Math.min(100, v));
+        return { label: s.label, value: v };
+      })
+      .slice(0, 6);
+
+    // Produits : on remappe les id choisis vers le vrai produit du catalogue
+    const byId = {};
+    CATALOG.forEach(p => { byId[p.id] = p; });
+    if (!Array.isArray(report.products)) report.products = [];
+    const seen = {};
+    report.products = report.products
+      .map(p => {
+        if (!p) return null;
+        // l'IA peut renvoyer {id,...} ; on retrouve le produit réel
+        const base = byId[p.id] || byId[(p.type || '').toLowerCase()];
+        if (!base) return null;
+        if (seen[base.id]) return null;
+        seen[base.id] = 1;
+        return {
+          id: base.id,
+          name: base.name,
+          brand: base.brand || '',
+          type: base.type || 'serum',
+          url: base.url,
+          img: base.img || '',
+          why: typeof p.why === 'string' ? p.why : '',
+          how: typeof p.how === 'string' ? p.how : ''
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 5);
+
+    // Filet de sécurité : si l'IA n'a renvoyé aucun produit exploitable,
+    // on propose un petit socle neutre plutôt qu'une section vide.
+    if (report.products.length === 0) {
+      report.products = ['sulfate-free', 'scalp-serum', 'masque']
+        .map(id => byId[id])
+        .map(b => ({ id: b.id, name: b.name, brand: b.brand || '', type: b.type, url: b.url, img: b.img || '', why: '', how: '' }));
+    }
+
+    // on renvoie aussi le teaser + la langue pour l'affichage
     report._teaser = result;
+    report._lang = L;
     return res.status(200).json(report);
   } catch (err) {
     return res.status(500).json({ error: 'Erreur serveur', detail: String(err) });

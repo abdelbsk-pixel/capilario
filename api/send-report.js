@@ -14,20 +14,26 @@ const EM = {
     zone:'Zone analysée', density:'Indice de densité', stage:'Stade estimé', type:'Type de cheveu',
     ctaTitle:'Allez plus loin avec le bilan complet',
     ctaDesc:'Analyse détaillée, routine sur 90 jours et produits ciblés adaptés à votre cas.',
-    ctaBtn:'Débloquer mon bilan complet — 5 €',
+    ctaBtn:'Débloquer mon bilan complet — 3,99 €',
     disclaimer:'Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.' },
   en: { subject:'Your Capilario hair report', title:'Your hair report', fallbackVerdict:'Hair analysis',
     zone:'Analyzed area', density:'Density index', stage:'Estimated stage', type:'Hair type',
     ctaTitle:'Go further with the full report',
     ctaDesc:'Detailed analysis, a 90-day routine and targeted products matched to your case.',
-    ctaBtn:'Unlock my full report — €5',
+    ctaBtn:'Unlock my full report — €3.99',
     disclaimer:'Cosmetic care analysis. Not a medical opinion.' },
   es: { subject:'Su informe capilar Capilario', title:'Su informe capilar', fallbackVerdict:'Análisis capilar',
     zone:'Zona analizada', density:'Índice de densidad', stage:'Etapa estimada', type:'Tipo de cabello',
     ctaTitle:'Vaya más lejos con el informe completo',
     ctaDesc:'Análisis detallado, rutina de 90 días y productos específicos adaptados a su caso.',
-    ctaBtn:'Desbloquear mi informe completo — 5 €',
-    disclaimer:'Análisis cosmético de cuidado. No constituye una opinión médica.' }
+    ctaBtn:'Desbloquear mi informe completo — 3,99 €',
+    disclaimer:'Análisis cosmético de cuidado. No constituye una opinión médica.' },
+  de: { subject:'Ihre Capilario Haar-Analyse', title:'Ihre Haar-Analyse', fallbackVerdict:'Haaranalyse',
+    zone:'Analysierte Zone', density:'Dichte-Index', stage:'Geschätztes Stadium', type:'Haartyp',
+    ctaTitle:'Gehen Sie weiter mit der vollständigen Analyse',
+    ctaDesc:'Detaillierte Analyse, 90-Tage-Routine und gezielte, auf Ihren Fall abgestimmte Produkte.',
+    ctaBtn:'Vollständige Analyse freischalten — 3,99 €',
+    disclaimer:'Kosmetische Pflege-Analyse. Keine medizinische Beratung.' }
 };
 
 function buildHtml(result, siteUrl, L) {
@@ -88,7 +94,7 @@ module.exports = async (req, res) => {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       return res.status(400).json({ error: 'Email invalide' });
     }
-    const L = ['fr','en','es'].includes(lang) ? lang : 'fr';
+    const L = ['fr','en','es','de'].includes(lang) ? lang : 'fr';
 
     const from = process.env.MAIL_FROM || 'Capilario <onboarding@resend.dev>';
     const siteUrl = process.env.SITE_URL || 'https://capilario.vercel.app';

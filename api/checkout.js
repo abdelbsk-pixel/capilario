@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
 
   try {
     const { answers = {}, result = {}, email = '', lang = 'fr' } = req.body || {};
-    const L = ['fr','en','es'].includes(lang) ? lang : 'fr';
+    const L = ['fr','en','es','de'].includes(lang) ? lang : 'fr';
     const site = process.env.SITE_URL || 'https://capilario-pnxy.vercel.app';
 
     const params = new URLSearchParams();

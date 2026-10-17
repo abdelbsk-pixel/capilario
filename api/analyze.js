@@ -33,12 +33,13 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
 
 Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes.
 
-IMPORTANT — Langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol.`;
+IMPORTANT — Langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.`;
 
 const STAGE_HINT = {
   fr: 'Précoce | Précoce à modéré | Modéré | Installé',
   en: 'Early | Early to moderate | Moderate | Established',
-  es: 'Inicial | Inicial a moderado | Moderado | Establecido'
+  es: 'Inicial | Inicial a moderado | Moderado | Establecido',
+  de: 'Früh | Früh bis mäßig | Mäßig | Fortgeschritten'
 };
 
 module.exports = async (req, res) => {
@@ -51,7 +52,7 @@ module.exports = async (req, res) => {
 
   try {
     const { answers = {}, photo = '', lang = 'fr' } = req.body || {};
-    const L = ['fr','en','es'].includes(lang) ? lang : 'fr';
+    const L = ['fr','en','es','de'].includes(lang) ? lang : 'fr';
 
     // Sépare le type d'image et les données base64 depuis la "data URL" envoyée par le site
     let media = 'image/jpeg';
