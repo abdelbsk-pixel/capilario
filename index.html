@@ -245,6 +245,72 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
 .prod-b small{ color:var(--muted); font-size:.82rem; display:block; margin-top:3px; line-height:1.4 }
 .prod-cta{ flex:none; color:var(--sage); font-weight:600; font-size:.85rem; white-space:nowrap }
 
+/* --- Graphique de scores (bilan complet) --- */
+.sc-chart{ border:1px solid var(--line); border-radius:16px; background:#FBF7EF; padding:18px 18px 8px }
+.sc-row{ margin-bottom:14px }
+.sc-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px }
+.sc-lbl{ font-size:.9rem; color:var(--ink); font-weight:500 }
+.sc-val{ font-family:var(--display); font-size:1.02rem; color:var(--sage); font-weight:600 }
+.sc-val small{ font-size:.66rem; color:var(--muted); font-weight:400 }
+.sc-track{ height:9px; border-radius:100px; background:#EAE5D7; overflow:hidden }
+.sc-fill{ display:block; height:100%; border-radius:100px; transition:width 1s cubic-bezier(.22,1,.36,1) }
+
+/* --- Produits recommandés par l'IA --- */
+.reco-list{ display:flex; flex-direction:column; gap:11px; margin-top:12px }
+.reco{ display:flex; align-items:flex-start; gap:14px; text-decoration:none;
+  border:1px solid var(--line); border-radius:16px; padding:15px 16px; background:#FBF7EF; transition:all .18s var(--ease) }
+.reco:hover{ border-color:var(--sage); transform:translateY(-1px); box-shadow:0 12px 26px -16px rgba(60,50,35,.5) }
+.reco-img{ position:relative; width:64px; height:68px; flex:none; border-radius:14px; overflow:hidden; display:block;
+  box-shadow:0 6px 16px -10px rgba(60,50,35,.5) }
+.reco-img svg{ display:block }
+.reco-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#fff }
+.reco-b{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px }
+.reco-brand{ font-family:var(--mono,'Space Mono',monospace); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); font-weight:700 }
+.reco-name{ font-family:var(--display); font-weight:500; font-size:1.05rem; line-height:1.2; color:var(--ink) }
+.reco-why{ color:var(--text); font-size:.88rem; line-height:1.45; margin-top:2px }
+.reco-how{ color:var(--sage); font-size:.82rem; line-height:1.4; margin-top:3px }
+.reco-cta{ flex:none; color:var(--sage); font-weight:600; font-size:.85rem; white-space:nowrap; align-self:center }
+
+/* --- Points clés (bandeau schéma) --- */
+.kp-strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 4px }
+.kp{ border:1px solid var(--line); border-radius:15px; background:linear-gradient(160deg,#FBF7EF,#F3ECDD); padding:14px 13px; position:relative }
+.kp-n{ width:24px; height:24px; border-radius:50%; background:var(--sage); color:#fff; font-family:var(--display);
+  font-size:.82rem; font-weight:600; display:grid; place-items:center; margin-bottom:9px }
+.kp-t{ font-family:var(--display); font-weight:600; font-size:.92rem; color:var(--ink); line-height:1.2 }
+.kp-x{ color:var(--muted); font-size:.8rem; line-height:1.45; margin-top:5px }
+@media (max-width:460px){ .kp-strip{ grid-template-columns:1fr } }
+
+/* --- Planning semaine (liste verticale premium) --- */
+.plan-list{ display:flex; flex-direction:column; gap:8px; margin-top:14px; position:relative }
+.plan-item{ display:flex; align-items:center; gap:13px; border:1px solid var(--line); border-radius:16px;
+  background:linear-gradient(100deg,#FBF7EF 0%,#FBF7EF 62%,#F5EEDF 100%); padding:11px 14px; transition:transform .16s var(--ease), box-shadow .16s var(--ease) }
+.plan-item:hover{ transform:translateX(2px); box-shadow:0 10px 22px -16px rgba(60,50,35,.5) }
+.plan-badge{ width:46px; height:46px; flex:none; border-radius:13px; background:var(--sage); color:#F5EFE4;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1 }
+.plan-badge .d{ font-family:var(--display); font-size:1rem; font-weight:600; text-transform:capitalize }
+.plan-ic{ width:34px; height:34px; flex:none; border-radius:50%; background:#EFEDE0; display:grid; place-items:center }
+.plan-ic svg{ width:19px; height:19px }
+.plan-act{ flex:1; min-width:0; font-size:.9rem; line-height:1.4; color:var(--text) }
+.plan-item.rest{ background:#F2EEE4; border-style:dashed }
+.plan-item.rest .plan-badge{ background:#C9C2B2; color:#5A5346 }
+.plan-item.rest .plan-ic{ background:#E8E3D6 }
+.plan-item.rest .plan-act{ color:var(--muted) }
+
+/* --- À faire / À éviter --- */
+.habits{ display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:12px }
+.hab-col{ border:1px solid var(--line); border-radius:16px; padding:15px 15px 9px; background:#FBF7EF }
+.hab-col.do{ background:linear-gradient(170deg,#EEF4ED,#FBF7EF) }
+.hab-col.dont{ background:linear-gradient(170deg,#F7ECE6,#FBF7EF) }
+.hab-h{ display:flex; align-items:center; gap:7px; font-weight:600; font-size:.9rem; color:var(--ink); margin-bottom:10px }
+.hab-badge{ width:22px; height:22px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:.78rem; font-weight:700; flex:none }
+.hab-col.do .hab-badge{ background:var(--sage) }
+.hab-col.dont .hab-badge{ background:#C06A4E }
+.hab-row{ display:flex; gap:8px; align-items:flex-start; font-size:.84rem; line-height:1.4; color:var(--text); padding:6px 0; border-top:1px solid rgba(120,100,70,.1) }
+.hab-row:first-of-type{ border-top:0 }
+.hab-row .m{ flex:none; font-weight:700 }
+.hab-col.do .m{ color:var(--sage) } .hab-col.dont .m{ color:#C06A4E }
+@media (max-width:460px){ .habits{ grid-template-columns:1fr } }
+
 .field{ margin:22px 0 12px }
 .field label{ font-size:.82rem; color:var(--muted); display:block; margin-bottom:9px }
 .field input{ width:100%; padding:15px 17px; border-radius:14px; border:1px solid var(--line);
@@ -518,6 +584,60 @@ function productIcon(t){
   return '<svg viewBox="0 0 24 24" fill="none">'+(I[t]||I.oil)+'</svg>';
 }
 
+/* Visuel produit détaillé (flacon/tube illustré) + teinte par type.
+   Rendu fiable (SVG), style proche des tuiles Typology / The Ordinary. */
+function productVisual(t){
+  const P={
+    serum:{bg:'#F0E6D6',glass:'#C9A86A',cap:'#3C352B',accent:'#8A6B3A'},
+    oil:  {bg:'#F3E7D2',glass:'#D9A441',cap:'#6B4A1E',accent:'#B0813A'},
+    shampoo:{bg:'#E7EEE9',glass:'#8FB09E',cap:'#394A41',accent:'#556053'},
+    mask: {bg:'#EFEAF0',glass:'#C8B8CF',cap:'#4A3F52',accent:'#7A6A82'},
+    roller:{bg:'#EDEAE2',glass:'#B9B2A3',cap:'#4A453B',accent:'#8A8270'},
+    leaf: {bg:'#E7F0E2',glass:'#6FA368',cap:'#2E4A2A',accent:'#4F7A49'}
+  };
+  const c=P[t]||P.serum;
+  const SH={
+    // flacon pipette (sérum)
+    serum:`<rect x="19" y="26" width="26" height="34" rx="6" fill="${c.glass}"/><rect x="23" y="33" width="18" height="20" rx="3" fill="#fff" opacity=".82"/><rect x="25" y="18" width="14" height="10" rx="2" fill="${c.cap}"/><rect x="29.5" y="8" width="5" height="12" rx="2.5" fill="${c.cap}"/><rect x="28" y="37" width="2.4" height="12" rx="1.2" fill="${c.accent}"/>`,
+    // flacon huile + bouchon liège
+    oil:`<path d="M22 28c0-3 3-4 3-7v-4h14v4c0 3 3 4 3 7v24a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6Z" fill="${c.glass}"/><rect x="24" y="40" width="16" height="16" rx="3" fill="#fff" opacity=".8"/><rect x="26" y="7" width="12" height="11" rx="2" fill="${c.cap}"/>`,
+    // flacon pompe (shampoing)
+    shampoo:`<rect x="20" y="30" width="24" height="30" rx="6" fill="${c.glass}"/><rect x="24" y="37" width="16" height="17" rx="3" fill="#fff" opacity=".8"/><rect x="26" y="22" width="12" height="9" rx="2" fill="${c.cap}"/><path d="M32 22v-6h9" stroke="${c.cap}" stroke-width="4" stroke-linecap="round" fill="none"/><rect x="39" y="12" width="4" height="7" rx="2" fill="${c.cap}"/>`,
+    // pot/jar (masque)
+    mask:`<rect x="18" y="30" width="28" height="28" rx="6" fill="${c.glass}"/><rect x="22" y="36" width="20" height="16" rx="3" fill="#fff" opacity=".78"/><rect x="16" y="22" width="32" height="11" rx="4" fill="${c.cap}"/>`,
+    // derma roller
+    roller:`<rect x="14" y="20" width="24" height="12" rx="6" fill="${c.glass}"/><g fill="${c.accent}"><circle cx="18" cy="18" r="1.4"/><circle cx="23" cy="17" r="1.4"/><circle cx="28" cy="17" r="1.4"/><circle cx="33" cy="18" r="1.4"/><circle cx="18" cy="34" r="1.4"/><circle cx="23" cy="35" r="1.4"/><circle cx="28" cy="35" r="1.4"/><circle cx="33" cy="34" r="1.4"/></g><rect x="36" y="24" width="4" height="26" rx="2" transform="rotate(-32 36 24)" fill="${c.cap}"/><rect x="46" y="46" width="9" height="6" rx="3" transform="rotate(-32 46 46)" fill="${c.cap}"/>`,
+    // feuille + goutte (actif végétal)
+    leaf:`<path d="M16 50c0-18 14-30 34-32-2 20-16 32-34 32Z" fill="${c.glass}"/><path d="M30 38c-5 3-9 7-12 12" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".7" fill="none"/><circle cx="44" cy="48" r="5" fill="${c.accent}"/>`
+  };
+  return '<svg viewBox="0 0 64 68" fill="none" width="100%" height="100%">'+
+    '<rect x="0" y="0" width="64" height="68" rx="14" fill="'+c.bg+'"/>'+
+    (SH[t]||SH.serum)+'</svg>';
+}
+
+/* Icône du geste de la semaine, détectée depuis le texte (fr/en/es). */
+function planIcon(txt){
+  const s=(txt||'').toLowerCase();
+  const I={
+    massage:'<circle cx="8" cy="12" r="1.6" fill="#556053"/><circle cx="12" cy="12" r="1.6" fill="#556053"/><circle cx="16" cy="12" r="1.6" fill="#556053"/><path d="M5 7c4-2 10-2 14 0M5 17c4 2 10 2 14 0" stroke="#B08D57" stroke-width="1.3" stroke-linecap="round"/>',
+    wash:'<path d="M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9Z" stroke="#556053" stroke-width="1.5"/><path d="M12 7v3M12 13v.01" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>',
+    serum:'<rect x="8" y="9" width="8" height="11" rx="2" stroke="#556053" stroke-width="1.4"/><path d="M10 9V5h4v4" stroke="#556053" stroke-width="1.4"/><path d="M12 13v3" stroke="#B08D57" stroke-width="1.4" stroke-linecap="round"/>',
+    roller:'<rect x="3.5" y="6" width="9" height="5" rx="2.5" stroke="#556053" stroke-width="1.4"/><path d="M12.5 12l5.5 6" stroke="#556053" stroke-width="1.4" stroke-linecap="round"/><path d="M5 7.2v2.6M8 7.2v2.6M11 7.2v2.6" stroke="#B08D57" stroke-width="1.1" stroke-linecap="round"/>',
+    mask:'<rect x="5" y="9" width="14" height="9" rx="2.5" stroke="#556053" stroke-width="1.4"/><path d="M5 9c0-2 3-3 7-3s7 1 7 3" stroke="#B08D57" stroke-width="1.4"/>',
+    oil:'<path d="M9 4h6M10 4v3c0 1-3 3-3 7a5 5 0 0 0 10 0c0-4-3-6-3-7V4" stroke="#556053" stroke-width="1.4" stroke-linejoin="round"/>',
+    rest:'<path d="M18 13.5A7 7 0 0 1 10.5 6a6 6 0 1 0 7.5 7.5Z" stroke="#8C857A" stroke-width="1.4" stroke-linejoin="round"/>'
+  };
+  let k='serum';
+  if(/massage|masser|masaj/.test(s)) k='massage';
+  else if(/shampo|shampooing|lav|wash|lava/.test(s)) k='wash';
+  else if(/roller|rouleau|derma/.test(s)) k='roller';
+  else if(/masque|mask|mascarilla/.test(s)) k='mask';
+  else if(/huile|oil|aceite|romarin|ricin|rosemary/.test(s)) k='oil';
+  else if(/repos|pause|libre|rest|off|descanso|rien|aucun/.test(s)) k='rest';
+  else if(/s[ée]rum|serum|sero|peptide/.test(s)) k='serum';
+  return '<svg viewBox="0 0 24 24" fill="none">'+I[k]+'</svg>';
+}
+
 const STEPS = [
   { key:'zone', eyebrow:'Zone', title:'Quelle zone vous préoccupe le plus ?', options:[
     {v:'golfes',l:'Les golfes / tempes',i:''},{v:'sommet',l:'Le sommet du crâne',i:''},
@@ -736,7 +856,7 @@ function renderResult(r){
   document.getElementById('verdictTitle').textContent=r.verdict||'';
   document.getElementById('verdictSub').textContent=r.subtitle||'';
   document.getElementById('repRef').textContent='CAP-'+Date.now().toString(36).slice(-5).toUpperCase();
-  try{ const loc=window.LANG==='en'?'en-GB':(window.LANG==='es'?'es-ES':'fr-FR');
+  try{ const loc=window.LANG==='en'?'en-GB':(window.LANG==='es'?'es-ES':(window.LANG==='de'?'de-DE':'fr-FR'));
     document.getElementById('repDate').textContent=new Date().toLocaleDateString(loc,{day:'2-digit',month:'long',year:'numeric'}); }catch(e){}
   const sev=document.getElementById('repSeverity');
   if(r.severity){ const s=(r.severity||'').toLowerCase();
@@ -794,7 +914,22 @@ function showFullReportError(msg){
 }
 function renderFullReport(d){
   document.getElementById('frLoading').style.display='none';
+  // le bilan est généré dans la langue payée → on aligne les titres dessus
+  if(d._lang && I18N[d._lang]){ window.LANG=d._lang; }
   const t=d._teaser||{};
+
+  // --- Graphique : barres de scores par dimension ---
+  const scores=(Array.isArray(d.scores)?d.scores:[]).filter(s=>s&&s.label);
+  const scoreBars=scores.map((s,i)=>{
+    const v=Math.max(0,Math.min(100,parseInt(s.value,10)||0));
+    const tone = v>=70?'var(--sage)' : v>=45?'var(--gold)' : '#C98A6A';
+    return `<div class="sc-row">
+      <div class="sc-top"><span class="sc-lbl">${esc(s.label)}</span><span class="sc-val">${v}<small>/100</small></span></div>
+      <div class="sc-track"><span class="sc-fill" data-w="${v}" style="width:0;background:${tone}"></span></div>
+    </div>`;
+  }).join('');
+
+  // --- Routine 90 jours ---
   const routine=(d.routine||[]).map(ph=>`
     <div style="margin-top:16px">
       <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600">${esc(ph.phase)}</div>
@@ -802,51 +937,106 @@ function renderFullReport(d){
         ${(ph.steps||[]).map(s=>`<li>${esc(s)}</li>`).join('')}
       </ul>
     </div>`).join('');
+
+  // --- Produits recommandés par l'IA (marque + raison + usage + lien) ---
   const products=(d.products||[]).map(p=>`
-    <div style="border:1px solid var(--line);border-radius:15px;padding:16px 18px;margin-top:11px;background:#FBF7EF">
-      <div style="font-family:var(--display);font-weight:500;font-size:1.05rem;color:var(--ink)">${esc(p.type)}</div>
-      <div style="color:var(--muted);font-size:.9rem;margin-top:5px">${esc(p.why)}</div>
-      ${p.how?`<div style="color:var(--gold);font-size:.85rem;margin-top:7px">— ${esc(p.how)}</div>`:''}
-    </div>`).join('');
-  const cautions=(d.cautions||[]).map(c=>`<li>${esc(c)}</li>`).join('');
-  const care=CARE_PRODUCTS.map(p=>`
-    <a class="prod" href="${p.url}" target="_blank" rel="noopener nofollow">
-      <span class="prod-ic">${productIcon(p.type)}</span>
-      <span class="prod-b"><b>${esc(p.name)}</b><small>${esc(p.desc)}</small></span>
-      <span class="prod-cta">Voir →</span>
+    <a class="reco" href="${esc(p.url||'#')}" target="_blank" rel="noopener nofollow">
+      <span class="reco-img">${productVisual(p.type)}${p.img?`<img class="reco-photo" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.remove()">`:''}</span>
+      <span class="reco-b">
+        ${p.brand?`<span class="reco-brand">${esc(p.brand)}</span>`:''}
+        <b class="reco-name">${esc(p.name)}</b>
+        ${p.why?`<span class="reco-why">${esc(p.why)}</span>`:''}
+        ${p.how?`<span class="reco-how">${esc(p.how)}</span>`:''}
+      </span>
+      <span class="reco-cta">${esc(T('frSeeProduct')||'Voir →')}</span>
     </a>`).join('');
 
+  const cautions=(d.cautions||[]).map(c=>`<li>${esc(c)}</li>`).join('');
+
+  // --- Points clés (bandeau schéma) ---
+  const keyPoints=(Array.isArray(d.keyPoints)?d.keyPoints:[]).filter(k=>k&&(k.title||k.text));
+  const kpHtml=keyPoints.map((k,i)=>`
+    <div class="kp">
+      <div class="kp-n">${i+1}</div>
+      ${k.title?`<div class="kp-t">${esc(k.title)}</div>`:''}
+      ${k.text?`<div class="kp-x">${esc(k.text)}</div>`:''}
+    </div>`).join('');
+
+  // --- Planning de la semaine ---
+  const planning=(Array.isArray(d.planning)?d.planning:[]).filter(p=>p&&(p.day||p.action));
+  const planHtml=planning.map(p=>{
+    const rest=/repos|libre|pause|rest|off|descanso|rien|aucun/i.test(p.action||'');
+    return `<div class="plan-item${rest?' rest':''}">
+      <div class="plan-badge"><span class="d">${esc((p.day||'').slice(0,3))}</span></div>
+      <div class="plan-ic">${planIcon(p.action)}</div>
+      <div class="plan-act">${esc(p.action||'')}</div>
+    </div>`;
+  }).join('');
+
+  // --- À faire / À éviter ---
+  const dos=(Array.isArray(d.dos)?d.dos:[]).filter(Boolean);
+  const donts=(Array.isArray(d.donts)?d.donts:[]).filter(Boolean);
+  const habitsHtml=(dos.length||donts.length)?`
+    <div class="habits">
+      <div class="hab-col do">
+        <div class="hab-h"><span class="hab-badge">✓</span>${esc(T('frDosLbl')||'À faire')}</div>
+        ${dos.map(x=>`<div class="hab-row"><span class="m">✓</span><span>${esc(x)}</span></div>`).join('')}
+      </div>
+      <div class="hab-col dont">
+        <div class="hab-h"><span class="hab-badge">✕</span>${esc(T('frDontsLbl')||'À éviter')}</div>
+        ${donts.map(x=>`<div class="hab-row"><span class="m">✕</span><span>${esc(x)}</span></div>`).join('')}
+      </div>
+    </div>`:'';
+
   document.getElementById('frContent').innerHTML=`
-    <h2 style="margin:20px 0 10px">${esc(t.verdict||'Votre bilan complet')}</h2>
+    <h2 style="margin:20px 0 10px">${esc(t.verdict||T('frBrand')||'Votre bilan complet')}</h2>
     <p class="lead" style="font-size:.98rem">${esc(d.summary||'')}</p>
 
+    ${keyPoints.length?`
+    <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-top:22px">${esc(T('frKeyLbl')||'À retenir')}</div>
+    <div class="kp-strip">${kpHtml}</div>`:''}
+
     <div class="gauge-wrap" style="margin:20px 0">
-      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">Zone</div><div class="v">${esc(t.zone||'—')}</div></div>
-      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">Stade</div><div class="v gold">${esc(t.stage||'—')}</div></div>
+      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">${esc(T('frZoneLbl')||'Zone')}</div><div class="v">${esc(t.zone||'—')}</div></div>
+      <div class="stat" style="flex:1;background:transparent;border:0;padding:0"><div class="k">${esc(T('frStageLbl')||'Stade')}</div><div class="v gold">${esc(t.stage||'—')}</div></div>
     </div>
 
-    <h2 style="font-size:1.3rem;margin:26px 0 4px">Votre routine sur 90 jours</h2>
+    ${scores.length?`
+    <h2 style="font-size:1.3rem;margin:28px 0 4px">${esc(T('frScoresLbl')||'Votre profil en détail')}</h2>
+    <p class="meta" style="margin-bottom:12px">${esc(T('frScoresSub')||'')}</p>
+    <div class="sc-chart">${scoreBars}</div>`:''}
+
+    ${planning.length?`
+    <h2 style="font-size:1.3rem;margin:30px 0 4px">${esc(T('frPlanningLbl')||'Votre semaine type')}</h2>
+    <p class="meta" style="margin-bottom:4px">${esc(T('frPlanningSub')||'')}</p>
+    <div class="plan-list">${planHtml}</div>`:''}
+
+    <h2 style="font-size:1.3rem;margin:30px 0 4px">${esc(T('frRoutineLbl')||'Votre routine sur 90 jours')}</h2>
     ${routine}
 
-    <h2 style="font-size:1.3rem;margin:28px 0 4px">Produits &amp; actifs conseillés</h2>
-    ${products}
+    <h2 style="font-size:1.3rem;margin:32px 0 4px">${esc(T('frRecoLbl')||'Produits recommandés pour vous')}</h2>
+    <p class="meta" style="margin-bottom:6px">${esc(T('frRecoSub')||'')}</p>
+    <div class="reco-list">${products}</div>
 
-    <h2 style="font-size:1.3rem;margin:30px 0 4px">Notre sélection de soins</h2>
-    <p class="meta" style="margin-bottom:4px">Des produits simples pour composer votre routine.</p>
-    <div class="care">${care}</div>
+    ${habitsHtml?`<h2 style="font-size:1.3rem;margin:32px 0 2px">${esc(T('frDosLbl')||'À faire')} / ${esc(T('frDontsLbl')||'À éviter')}</h2>${habitsHtml}`:''}
 
-    <h2 style="font-size:1.3rem;margin:28px 0 8px">Points de vigilance</h2>
+    <h2 style="font-size:1.3rem;margin:30px 0 8px">${esc(T('frCautionsLbl')||'Points de vigilance')}</h2>
     <ul style="margin:0;padding-left:18px;color:var(--text);font-size:.95rem;line-height:1.8">${cautions}</ul>
 
     <div style="margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:15px;background:#F3ECDD">
-      <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600">Évolution probable</div>
+      <div style="font-size:.68rem;color:var(--sage);letter-spacing:.16em;text-transform:uppercase;font-weight:600">${esc(T('frOutlookLbl')||'Évolution probable')}</div>
       <p style="color:var(--text);font-size:.95rem;margin-top:9px">${esc(d.outlook||'')}</p>
     </div>
 
-    <p class="foot-note disclaimer" style="margin:22px 0 8px;text-align:center">Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.</p>
+    <p class="foot-note disclaimer" style="margin:22px 0 8px;text-align:center">${esc(T('footNote')||'Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.')}</p>
     <div style="height:14px"></div>`;
   document.getElementById('frContent').style.display='block';
   goScreen('fullreport','fwd');
+
+  // animation des barres après le rendu
+  requestAnimationFrame(()=>{ setTimeout(()=>{
+    document.querySelectorAll('#frContent .sc-fill').forEach(el=>{ el.style.width=(el.dataset.w||0)+'%'; });
+  },80); });
 }
 
 /* ---- Détection du retour de paiement ---- */
@@ -906,7 +1096,13 @@ const I18N={
    pvAnalyse:'Analyse détaillée', pvRoutine:'Routine sur 90 jours', pvProducts:'Produits conseillés pour vous',
    phases:['Semaines 1-4','Semaines 5-8','Semaines 9-12'], pvLock:'Tout débloquer — 3,99 €',
    rs1:'🔒 Paiement sécurisé Stripe', rs2:'⚡ Accès immédiat', rs3:'✓ Sans abonnement',
-   repSynth:'Synthèse de votre analyse', repProfile:'Votre profil capillaire', repKpi:'📊 Indicateurs clés', repAnalysisLbl:'🔬 Analyse de votre profil' },
+   repSynth:'Synthèse de votre analyse', repProfile:'Votre profil capillaire', repKpi:'📊 Indicateurs clés', repAnalysisLbl:'🔬 Analyse de votre profil',
+   frScoresLbl:'📈 Votre profil capillaire en détail', frScoresSub:'Indices cosmétiques indicatifs, estimés à partir de votre photo et de votre questionnaire.',
+   frRoutineLbl:'Votre routine sur 90 jours', frRecoLbl:'✨ Produits recommandés pour vous',
+   frRecoSub:'Sélectionnés par notre IA selon votre profil — à adapter librement.', frSeeProduct:'Voir →',
+   frCautionsLbl:'Points de vigilance', frOutlookLbl:'Évolution probable', frZoneLbl:'Zone', frStageLbl:'Stade',
+   frKeyLbl:'À retenir', frPlanningLbl:'🗓️ Votre semaine type', frPlanningSub:'Un geste simple par jour — adaptez selon votre rythme.',
+   frDosLbl:'À faire', frDontsLbl:'À éviter' },
  en:{ tag:'AI Analysis', cap:'Understand, to care better.', lEyebrow:'AI hair analysis',
    h1:'Understand your hair, gently.',
    lead:'Six questions, one photo. Our AI reviews your scalp and sends you a personalized care report — free.',
@@ -930,7 +1126,13 @@ const I18N={
    pvAnalyse:'Detailed analysis', pvRoutine:'90-day routine', pvProducts:'Products recommended for you',
    phases:['Weeks 1-4','Weeks 5-8','Weeks 9-12'], pvLock:'Unlock everything — €3.99',
    rs1:'🔒 Secure Stripe payment', rs2:'⚡ Instant access', rs3:'✓ No subscription',
-   repSynth:'Summary of your analysis', repProfile:'Your hair profile', repKpi:'📊 Key indicators', repAnalysisLbl:'🔬 Analysis of your profile' },
+   repSynth:'Summary of your analysis', repProfile:'Your hair profile', repKpi:'📊 Key indicators', repAnalysisLbl:'🔬 Analysis of your profile',
+   frScoresLbl:'📈 Your hair profile in detail', frScoresSub:'Indicative cosmetic indices, estimated from your photo and questionnaire.',
+   frRoutineLbl:'Your 90-day routine', frRecoLbl:'✨ Products recommended for you',
+   frRecoSub:'Selected by our AI based on your profile — adjust freely.', frSeeProduct:'View →',
+   frCautionsLbl:'Points of caution', frOutlookLbl:'Likely evolution', frZoneLbl:'Area', frStageLbl:'Stage',
+   frKeyLbl:'Key takeaways', frPlanningLbl:'🗓️ Your typical week', frPlanningSub:'One simple step a day — adjust to your own rhythm.',
+   frDosLbl:'Do', frDontsLbl:'Avoid' },
  es:{ tag:'Análisis por IA', cap:'Entender, para cuidar mejor.', lEyebrow:'Análisis capilar por IA',
    h1:'Entienda su cabello, con suavidad.',
    lead:'Seis preguntas, una foto. Nuestra IA observa su cuero cabelludo y le envía un informe de cuidado personalizado — gratis.',
@@ -954,7 +1156,43 @@ const I18N={
    pvAnalyse:'Análisis detallado', pvRoutine:'Rutina de 90 días', pvProducts:'Productos recomendados para usted',
    phases:['Semanas 1-4','Semanas 5-8','Semanas 9-12'], pvLock:'Desbloquear todo — 3,99 €',
    rs1:'🔒 Pago seguro con Stripe', rs2:'⚡ Acceso inmediato', rs3:'✓ Sin suscripción',
-   repSynth:'Síntesis de su análisis', repProfile:'Su perfil capilar', repKpi:'📊 Indicadores clave', repAnalysisLbl:'🔬 Análisis de su perfil' }
+   repSynth:'Síntesis de su análisis', repProfile:'Su perfil capilar', repKpi:'📊 Indicadores clave', repAnalysisLbl:'🔬 Análisis de su perfil',
+   frScoresLbl:'📈 Su perfil capilar en detalle', frScoresSub:'Índices cosméticos indicativos, estimados a partir de su foto y su cuestionario.',
+   frRoutineLbl:'Su rutina de 90 días', frRecoLbl:'✨ Productos recomendados para usted',
+   frRecoSub:'Seleccionados por nuestra IA según su perfil — ajústelos libremente.', frSeeProduct:'Ver →',
+   frCautionsLbl:'Puntos de atención', frOutlookLbl:'Evolución probable', frZoneLbl:'Zona', frStageLbl:'Etapa',
+   frKeyLbl:'Para recordar', frPlanningLbl:'🗓️ Su semana tipo', frPlanningSub:'Un gesto simple al día — adáptelo a su ritmo.',
+   frDosLbl:'Hacer', frDontsLbl:'Evitar' },
+ de:{ tag:'KI-Analyse', cap:'Verstehen, um besser zu pflegen.', lEyebrow:'KI-Haaranalyse',
+   h1:'Verstehen Sie Ihr Haar, ganz sanft.',
+   lead:'Sechs Fragen, ein Foto. Unsere KI betrachtet Ihre Kopfhaut und sendet Ihnen eine persönliche Pflege-Analyse — kostenlos.',
+   chips:['2 Minuten','Unverbindlich','Vertraulich'], ctaStart:'Analyse starten',
+   disclaimerLanding:'Capilario bietet eine kosmetische Pflege-Analyse. Dieser Service stellt keine medizinische Diagnose dar und ersetzt nicht den Rat einer medizinischen Fachkraft.',
+   photoEyebrow:'Letzter Schritt', photoTitle:'Ein Foto der Zone',
+   camHint:'Zone erfassen · Tageslicht bevorzugt',
+   photoDisclaimer:'Ihr Foto wird ausschließlich für die Analyse verwendet und nicht geteilt.',
+   btnTake:'Foto aufnehmen', btnImport:'Hochladen', btnAnalyze:'Mein Foto analysieren', btnRetake:'Wiederholen',
+   scan:['Foto wird gelesen…','Zone wird betrachtet…','Dichte wird geschätzt…','Analyse wird vorbereitet…'],
+   resultBrand:'Ihre Analyse', densite:'Dichte', stats:['Analysierte Zone','Geschätztes Stadium','Haartyp','Geschätzte Dichte'],
+   lockedBlur:'90-Tage-Pflegeprotokoll · 3 gezielte Produkte (Öle, Wirkstoffe, Routine) · Detaillierte Analyse · Wahrscheinliche Entwicklung und Hinweise · Auf Ihren Fall abgestimmte Produkte.',
+   lockTitle:'Vollständige Analyse', lockMeta:'Detaillierte Analyse + Ihre persönliche Routine', pricePill:'Vollständige Analyse · 3,99 €',
+   sold:['Detaillierte Analyse Ihrer Zone + genaues Stadium','90-Tage-Routine, Schritt für Schritt','Für Ihren Haartyp empfohlene Produkte','Hinweise und wahrscheinliche Entwicklung'],
+   fieldLabel:'Erhalten Sie Ihre Analyse per E-Mail', emailPh:'ihre@email.com', btnSend:'Analyse zusenden',
+   emailSent:'Analyse gesendet — bitte prüfen Sie Ihren Spam-Ordner.',
+   footNote:'Kosmetische Pflege-Analyse. Keine medizinische Beratung.',
+   ctaUnlock:'Vollständige Analyse freischalten — 3,99 €',
+   frBrand:'Vollständige Analyse', frLoadingTitle:'Ihre Analyse wird vorbereitet…', frLoadingMeta:'Zahlung bestätigt · einige Sekunden',
+   pvEyebrow:'Vorschau Ihrer vollständigen Analyse', pvTitle:'Ihre persönliche Routine ist bereit',
+   pvAnalyse:'Detaillierte Analyse', pvRoutine:'90-Tage-Routine', pvProducts:'Für Sie empfohlene Produkte',
+   phases:['Woche 1-4','Woche 5-8','Woche 9-12'], pvLock:'Alles freischalten — 3,99 €',
+   rs1:'🔒 Sichere Stripe-Zahlung', rs2:'⚡ Sofortiger Zugang', rs3:'✓ Kein Abo',
+   repSynth:'Zusammenfassung Ihrer Analyse', repProfile:'Ihr Haarprofil', repKpi:'📊 Schlüsselindikatoren', repAnalysisLbl:'🔬 Analyse Ihres Profils',
+   frScoresLbl:'📈 Ihr Haarprofil im Detail', frScoresSub:'Kosmetische Richtwerte, geschätzt aus Ihrem Foto und Ihrem Fragebogen.',
+   frRoutineLbl:'Ihre 90-Tage-Routine', frRecoLbl:'✨ Für Sie empfohlene Produkte',
+   frRecoSub:'Von unserer KI nach Ihrem Profil ausgewählt — frei anpassbar.', frSeeProduct:'Ansehen →',
+   frCautionsLbl:'Hinweise', frOutlookLbl:'Wahrscheinliche Entwicklung', frZoneLbl:'Zone', frStageLbl:'Stadium',
+   frKeyLbl:'Zum Merken', frPlanningLbl:'🗓️ Ihre typische Woche', frPlanningSub:'Eine einfache Geste pro Tag — passen Sie sie Ihrem Rhythmus an.',
+   frDosLbl:'Empfohlen', frDontsLbl:'Vermeiden' }
 };
 const STEPS_I18N={
  fr:[
@@ -977,7 +1215,14 @@ const STEPS_I18N={
   {eyebrow:'Antecedentes',title:'¿Antecedentes en su familia?',options:['Sí','No','No lo sé']},
   {eyebrow:'Edad',title:'¿Su rango de edad?',options:['18 – 24 años','25 – 34 años','35 – 44 años','45 años o más']},
   {eyebrow:'Objetivo',title:'¿Su objetivo principal?',options:['Frenar la caída','Dar densidad','Entender qué ocurre','Mantener mi cabello']},
-  {eyebrow:'Tipo',title:'¿Su tipo de cabello?',options:['Liso','Ondulado','Rizado','Muy rizado']} ]
+  {eyebrow:'Tipo',title:'¿Su tipo de cabello?',options:['Liso','Ondulado','Rizado','Muy rizado']} ],
+ de:[
+  {eyebrow:'Zone',title:'Welche Zone beschäftigt Sie am meisten?',options:['Geheimratsecken / Schläfen','Wirbel / Oberkopf','Vordere Haarlinie','Allgemeine Dichte','Bart']},
+  {eyebrow:'Dauer',title:'Seit wann besteht das?',options:['Weniger als 6 Monate','6 bis 12 Monate','1 bis 3 Jahre','Mehr als 3 Jahre']},
+  {eyebrow:'Veranlagung',title:'Gibt es Fälle in Ihrer Familie?',options:['Ja','Nein','Weiß ich nicht']},
+  {eyebrow:'Alter',title:'Ihre Altersgruppe?',options:['18 – 24 Jahre','25 – 34 Jahre','35 – 44 Jahre','45 Jahre und älter']},
+  {eyebrow:'Ziel',title:'Ihr Hauptziel?',options:['Den Ausfall verlangsamen','Dichte aufbauen','Verstehen, was passiert','Mein Haar pflegen']},
+  {eyebrow:'Haartyp',title:'Ihr Haartyp?',options:['Glatt','Wellig','Lockig','Kraus']} ]
 };
 function setTxt(sel,val){ const el=document.querySelector(sel); if(el&&val!=null) el.textContent=val; }
 function setList(sel,arr,tick){ document.querySelectorAll(sel).forEach((el,i)=>{ if(arr[i]==null)return;
@@ -1022,12 +1267,12 @@ function applyLang(l){
 (function(){
   const sel=document.createElement('div'); sel.id='langsel';
   sel.style.cssText='position:absolute;top:calc(12px + env(safe-area-inset-top));right:16px;z-index:60;display:flex;gap:2px;background:rgba(251,247,239,.92);border:1px solid var(--line);border-radius:100px;padding:3px;box-shadow:0 6px 16px -10px rgba(60,50,35,.4)';
-  ['fr','en','es'].forEach(l=>{ const b=document.createElement('button'); b.textContent=l.toUpperCase(); b.dataset.l=l;
+  ['fr','en','es','de'].forEach(l=>{ const b=document.createElement('button'); b.textContent=l.toUpperCase(); b.dataset.l=l;
     b.style.cssText='border:0;background:transparent;font:600 .7rem Inter,system-ui,sans-serif;color:var(--muted);padding:5px 10px;border-radius:100px;cursor:pointer';
     b.onclick=()=>applyLang(l); sel.appendChild(b); });
   document.getElementById('app').appendChild(sel);
   const nav=(navigator.language||'fr').slice(0,2).toLowerCase();
-  applyLang(nav==='en'?'en':(nav==='es'?'es':'fr'));
+  applyLang(['en','es','de'].includes(nav)?nav:'fr');
 })();
 </script>
 <script>
