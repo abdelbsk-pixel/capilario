@@ -79,17 +79,77 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
 @keyframes up{ to{opacity:1;transform:none} }
 
 /* ---------- landing hero ---------- */
-.hero{ position:relative; height:290px; margin:20px 0 30px; border-radius:var(--r); overflow:hidden;
-  border:1px solid var(--line);
-  background:radial-gradient(120% 100% at 50% 15%, #F7EFE0, #E8DECA) }
-.hero canvas{ position:absolute; inset:0; width:100%; height:100%; display:block }
-.hero .cap{ position:absolute; left:20px; bottom:16px; font-family:var(--display); font-style:italic;
-  font-size:1rem; color:var(--sage); opacity:.92; z-index:2; text-shadow:0 1px 12px rgba(247,239,224,.85) }
+/* carte "aperçu du bilan" (hero vendeur) */
+.hp{ margin:20px 0 4px; border:1px solid var(--line); border-radius:var(--r); padding:16px 17px;
+  background:linear-gradient(160deg,#FBF7EF 0%,#F4ECDC 100%);
+  box-shadow:0 20px 40px -28px rgba(60,50,35,.55) }
+.hp-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px }
+.hp-brand{ font-family:var(--mono,'Space Mono',monospace); font-size:.6rem; letter-spacing:.2em; color:var(--sage); font-weight:700 }
+.hp-tag{ font-size:.62rem; letter-spacing:.04em; color:var(--muted); background:#EFEADC; border:1px solid var(--line); border-radius:100px; padding:3px 10px }
+.hp-main{ display:flex; align-items:center; gap:16px }
+.hp-gauge{ width:84px; height:84px; flex:none }
+.hp-gauge svg{ width:100%; height:100% }
+.hp-info{ flex:1; min-width:0 }
+.hp-metric{ font-family:var(--display); font-weight:500; font-size:1.1rem; color:var(--ink); line-height:1.2 }
+.hp-badge{ display:inline-block; margin-top:8px; font-size:.72rem; font-weight:600; color:#8A6B1E;
+  background:rgba(176,141,87,.16); border:1px solid rgba(176,141,87,.35); border-radius:100px; padding:4px 11px }
+.hp-bars{ margin-top:15px; display:flex; flex-direction:column; gap:9px }
+.hp-bar{ display:flex; align-items:center; gap:10px }
+.hp-bl{ font-size:.78rem; color:var(--muted); width:116px; flex:none }
+.hp-bt{ flex:1; height:7px; border-radius:100px; background:#EAE5D7; overflow:hidden }
+.hp-bt i{ display:block; height:100%; border-radius:100px; background:var(--sage) }
+.hp-foot{ display:flex; align-items:center; gap:8px; margin-top:15px; padding-top:13px; border-top:1px solid var(--line);
+  font-size:.8rem; color:var(--sage); font-weight:500 }
+.hp-lock{ font-size:.82rem }
 
 .trust{ display:flex; gap:9px; margin-top:22px; flex-wrap:wrap }
 .chip{ display:inline-flex; align-items:center; gap:7px; font-size:.8rem; color:var(--text);
   background:#FBF7EF; border:1px solid var(--line); border-radius:100px; padding:8px 14px }
 .chip .tick{ color:var(--gold); font-weight:700 }
+
+/* ---------- comment ça marche ---------- */
+.hiw{ margin-top:30px }
+.hiw-eyebrow{ font-size:.66rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:14px }
+.hiw-steps{ display:flex; flex-direction:column; gap:10px }
+.hiw-step{ display:flex; align-items:center; gap:14px; border:1px solid var(--line); border-radius:16px;
+  background:linear-gradient(100deg,#FBF7EF 0%,#FBF7EF 60%,#F5EEDF 100%); padding:14px 16px; position:relative }
+.hiw-step .n{ width:30px; height:30px; flex:none; border-radius:50%; background:var(--sage); color:#F5EFE4;
+  font-family:var(--display); font-weight:600; font-size:.9rem; display:grid; place-items:center }
+.hiw-ic{ width:40px; height:40px; flex:none; border-radius:12px; background:#EFEDE0; display:grid; place-items:center }
+.hiw-ic svg{ width:22px; height:22px }
+.hiw-tx{ flex:1; min-width:0 }
+.hiw-tx b{ display:block; font-family:var(--display); font-weight:500; font-size:1rem; color:var(--ink); line-height:1.2 }
+.hiw-tx small{ display:block; color:var(--muted); font-size:.84rem; line-height:1.4; margin-top:3px }
+.hiw-step:not(:last-child)::after{ content:''; position:absolute; left:31px; bottom:-10px; height:10px; width:2px; background:var(--line) }
+
+/* ---------- sections marketing (landing longue) ---------- */
+.sec{ margin-top:40px }
+.sec-eyebrow{ font-size:.66rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:600 }
+.sec-title{ font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--ink); margin-top:8px; line-height:1.15 }
+.ben-grid{ display:flex; flex-direction:column; gap:10px; margin-top:16px }
+.ben{ border:1px solid var(--line); border-radius:16px; background:#FBF7EF; padding:15px 16px }
+.ben .bn{ width:30px; height:30px; border-radius:9px; background:#EFEDE0; display:grid; place-items:center; margin-bottom:10px; font-size:1rem }
+.ben b{ display:block; font-family:var(--display); font-weight:500; font-size:1.02rem; color:var(--ink) }
+.ben small{ display:block; color:var(--muted); font-size:.86rem; line-height:1.45; margin-top:4px }
+.feats{ list-style:none; margin:16px 0 0; padding:0; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#FBF7EF }
+.feats li{ display:flex; gap:11px; align-items:flex-start; padding:13px 16px; border-top:1px solid rgba(120,100,70,.1); font-size:.92rem; color:var(--text) }
+.feats li:first-child{ border-top:0 }
+.feats li::before{ content:'✓'; color:var(--sage); font-weight:700; flex:none }
+.faq{ margin-top:16px; display:flex; flex-direction:column; gap:9px }
+.faq details{ border:1px solid var(--line); border-radius:14px; background:#FBF7EF; overflow:hidden }
+.faq summary{ list-style:none; cursor:pointer; padding:14px 16px; font-weight:500; color:var(--ink); font-size:.93rem; display:flex; justify-content:space-between; align-items:center; gap:10px }
+.faq summary::-webkit-details-marker{ display:none }
+.faq summary::after{ content:'+'; color:var(--sage); font-size:1.25rem; flex:none; transition:transform .2s }
+.faq details[open] summary::after{ transform:rotate(45deg) }
+.faq .a{ padding:0 16px 14px; color:var(--muted); font-size:.88rem; line-height:1.55 }
+.closing{ margin-top:42px; text-align:center; padding:30px 22px; border:1px solid var(--line); border-radius:var(--r); background:linear-gradient(160deg,#F2ECDC,#E8DECA) }
+.closing h2{ font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--ink); line-height:1.15 }
+.closing p{ color:var(--text); font-size:.95rem; margin:10px 0 18px }
+.closing .btn{ max-width:340px; margin:0 auto }
+.site-foot{ margin-top:34px; padding-top:20px; border-top:1px solid var(--line); display:flex; flex-wrap:wrap; gap:16px 18px; align-items:center }
+.site-foot a{ color:var(--muted); font-size:.82rem; text-decoration:none }
+.site-foot a:hover{ color:var(--sage) }
+.foot-copy{ width:100%; color:var(--muted); font-size:.74rem; opacity:.85; margin-top:4px }
 
 /* ---------- questionnaire ---------- */
 .topbar{ display:flex; align-items:center; gap:12px; padding:22px 0 6px }
@@ -345,19 +405,81 @@ h2{ font-family:var(--display); font-weight:500; font-size:1.7rem; line-height:1
         <b>Capilario</b><span class="tag">Analyse par IA</span>
       </div>
 
-      <div class="hero reveal d2">
-        <canvas id="heroCanvas"></canvas>
-        <div class="cap">Comprendre, pour mieux prendre soin.</div>
+      <span class="eyebrow reveal d2" style="margin-top:6px">Analyse capillaire par IA</span>
+      <h1 class="reveal d2" style="margin-top:12px">Comprenez vos cheveux, en douceur.</h1>
+      <p class="lead reveal d3" style="margin-top:14px">Six questions, une photo. Notre IA observe votre cuir chevelu et vous adresse un bilan de soin personnalisé — offert.</p>
+
+      <div class="hp reveal d3">
+        <div class="hp-top"><span class="hp-brand">CAPILARIO</span><span class="hp-tag" id="hpTag">Aperçu de votre bilan</span></div>
+        <div class="hp-main">
+          <div class="hp-gauge">
+            <svg viewBox="0 0 84 84" fill="none">
+              <circle cx="42" cy="42" r="34" stroke="#EAE5D7" stroke-width="7"/>
+              <circle cx="42" cy="42" r="34" stroke="#556053" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="59.8" transform="rotate(-90 42 42)"/>
+              <text x="42" y="40" text-anchor="middle" font-family="Fraunces,serif" font-size="21" font-weight="600" fill="#2E2A24">72</text>
+              <text x="42" y="54" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#8C857A">/ 100</text>
+            </svg>
+          </div>
+          <div class="hp-info">
+            <div class="hp-metric" id="hpMetric">Densité apparente</div>
+            <span class="hp-badge" id="hpBadge">Modérée</span>
+          </div>
+        </div>
+        <div class="hp-bars">
+          <div class="hp-bar"><span class="hp-bl" id="hpBar1">Cuir chevelu</span><span class="hp-bt"><i style="width:82%"></i></span></div>
+          <div class="hp-bar"><span class="hp-bl" id="hpBar2">Ligne d'implantation</span><span class="hp-bt"><i style="width:61%;background:var(--gold)"></i></span></div>
+        </div>
+        <div class="hp-foot"><span class="hp-lock">🔒</span><span id="hpFoot">Analyse complète personnalisée</span></div>
       </div>
 
-      <span class="eyebrow reveal d2">Analyse capillaire par IA</span>
-      <h1 class="reveal d3" style="margin-top:14px">Comprenez vos cheveux, en douceur.</h1>
-      <p class="lead reveal d3" style="margin-top:16px">Six questions, une photo. Notre IA observe votre cuir chevelu et vous adresse un bilan de soin personnalisé — offert.</p>
       <div class="trust reveal d4">
         <span class="chip"><span class="tick">✓</span> 2 minutes</span>
         <span class="chip"><span class="tick">✓</span> Sans engagement</span>
         <span class="chip"><span class="tick">✓</span> Confidentiel</span>
       </div>
+
+      <div class="hiw reveal d4">
+        <div class="hiw-eyebrow" id="hiwEyebrow">Comment ça marche</div>
+        <div class="hiw-steps" id="hiwSteps"></div>
+      </div>
+
+      <!-- Bénéfices -->
+      <div class="sec">
+        <div class="sec-eyebrow" id="benEyebrow"></div>
+        <h2 class="sec-title" id="benTitle"></h2>
+        <div class="ben-grid" id="benefitsList"></div>
+      </div>
+
+      <!-- Ce que contient le bilan -->
+      <div class="sec">
+        <div class="sec-eyebrow" id="repEyebrow"></div>
+        <h2 class="sec-title" id="repTitle"></h2>
+        <ul class="feats" id="reportFeatsList"></ul>
+      </div>
+
+      <!-- FAQ -->
+      <div class="sec">
+        <div class="sec-eyebrow" id="faqEyebrow"></div>
+        <h2 class="sec-title" id="faqTitle"></h2>
+        <div class="faq" id="faqList"></div>
+      </div>
+
+      <!-- CTA final -->
+      <div class="closing">
+        <h2 id="closeTitle"></h2>
+        <p id="closeText"></p>
+        <button class="btn btn-primary" onclick="startQuiz()" id="closeBtn"></button>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-foot">
+        <a href="mentions-legales.html" id="lkMentions"></a>
+        <a href="confidentialite.html" id="lkPrivacy"></a>
+        <a href="cgv.html" id="lkCgv"></a>
+        <a href="mailto:contact@capilario.com" id="lkContact"></a>
+        <div class="foot-copy" id="footNote2"></div>
+      </footer>
     </div>
     <div class="screen-foot">
       <button class="btn btn-primary" onclick="startQuiz()">Commencer mon analyse</button>
@@ -1102,7 +1224,13 @@ const I18N={
    frRecoSub:'Sélectionnés par notre IA selon votre profil — à adapter librement.', frSeeProduct:'Voir →',
    frCautionsLbl:'Points de vigilance', frOutlookLbl:'Évolution probable', frZoneLbl:'Zone', frStageLbl:'Stade',
    frKeyLbl:'À retenir', frPlanningLbl:'🗓️ Votre semaine type', frPlanningSub:'Un geste simple par jour — adaptez selon votre rythme.',
-   frDosLbl:'À faire', frDontsLbl:'À éviter' },
+   frDosLbl:'À faire', frDontsLbl:'À éviter',
+   hiwEyebrow:'Comment ça marche', hiw:[
+     {t:'Réponds au questionnaire', d:'6 questions rapides : zone, ancienneté, âge, objectif, type de cheveu.'},
+     {t:'Ajoute une photo', d:"Une photo de la zone, à la lumière du jour. Elle sert uniquement à l'analyse."},
+     {t:'Reçois ton bilan', d:"L'IA observe et t'envoie un bilan de soin personnalisé — offert."}
+   ],
+   hp:{tag:'Aperçu de votre bilan', metric:'Densité apparente', badge:'Modérée', bar1:'Cuir chevelu', bar2:"Ligne d'implantation", foot:'Analyse complète personnalisée'} },
  en:{ tag:'AI Analysis', cap:'Understand, to care better.', lEyebrow:'AI hair analysis',
    h1:'Understand your hair, gently.',
    lead:'Six questions, one photo. Our AI reviews your scalp and sends you a personalized care report — free.',
@@ -1132,7 +1260,13 @@ const I18N={
    frRecoSub:'Selected by our AI based on your profile — adjust freely.', frSeeProduct:'View →',
    frCautionsLbl:'Points of caution', frOutlookLbl:'Likely evolution', frZoneLbl:'Area', frStageLbl:'Stage',
    frKeyLbl:'Key takeaways', frPlanningLbl:'🗓️ Your typical week', frPlanningSub:'One simple step a day — adjust to your own rhythm.',
-   frDosLbl:'Do', frDontsLbl:'Avoid' },
+   frDosLbl:'Do', frDontsLbl:'Avoid',
+   hiwEyebrow:'How it works', hiw:[
+     {t:'Answer the questionnaire', d:'6 quick questions: area, duration, age, goal, hair type.'},
+     {t:'Add a photo', d:'A photo of the area in daylight. Used only for the analysis.'},
+     {t:'Get your report', d:'Our AI reviews it and sends you a personalized care report — free.'}
+   ],
+   hp:{tag:'Preview of your report', metric:'Apparent density', badge:'Moderate', bar1:'Scalp', bar2:'Hairline', foot:'Full personalized analysis'} },
  es:{ tag:'Análisis por IA', cap:'Entender, para cuidar mejor.', lEyebrow:'Análisis capilar por IA',
    h1:'Entienda su cabello, con suavidad.',
    lead:'Seis preguntas, una foto. Nuestra IA observa su cuero cabelludo y le envía un informe de cuidado personalizado — gratis.',
@@ -1162,7 +1296,13 @@ const I18N={
    frRecoSub:'Seleccionados por nuestra IA según su perfil — ajústelos libremente.', frSeeProduct:'Ver →',
    frCautionsLbl:'Puntos de atención', frOutlookLbl:'Evolución probable', frZoneLbl:'Zona', frStageLbl:'Etapa',
    frKeyLbl:'Para recordar', frPlanningLbl:'🗓️ Su semana tipo', frPlanningSub:'Un gesto simple al día — adáptelo a su ritmo.',
-   frDosLbl:'Hacer', frDontsLbl:'Evitar' },
+   frDosLbl:'Hacer', frDontsLbl:'Evitar',
+   hiwEyebrow:'Cómo funciona', hiw:[
+     {t:'Responda el cuestionario', d:'6 preguntas rápidas: zona, antigüedad, edad, objetivo, tipo de cabello.'},
+     {t:'Añada una foto', d:'Una foto de la zona con luz natural. Se usa solo para el análisis.'},
+     {t:'Reciba su informe', d:'Nuestra IA la observa y le envía un informe de cuidado personalizado — gratis.'}
+   ],
+   hp:{tag:'Vista previa de su informe', metric:'Densidad aparente', badge:'Moderada', bar1:'Cuero cabelludo', bar2:'Línea de implantación', foot:'Análisis completo personalizado'} },
  de:{ tag:'KI-Analyse', cap:'Verstehen, um besser zu pflegen.', lEyebrow:'KI-Haaranalyse',
    h1:'Verstehen Sie Ihr Haar, ganz sanft.',
    lead:'Sechs Fragen, ein Foto. Unsere KI betrachtet Ihre Kopfhaut und sendet Ihnen eine persönliche Pflege-Analyse — kostenlos.',
@@ -1192,7 +1332,135 @@ const I18N={
    frRecoSub:'Von unserer KI nach Ihrem Profil ausgewählt — frei anpassbar.', frSeeProduct:'Ansehen →',
    frCautionsLbl:'Hinweise', frOutlookLbl:'Wahrscheinliche Entwicklung', frZoneLbl:'Zone', frStageLbl:'Stadium',
    frKeyLbl:'Zum Merken', frPlanningLbl:'🗓️ Ihre typische Woche', frPlanningSub:'Eine einfache Geste pro Tag — passen Sie sie Ihrem Rhythmus an.',
-   frDosLbl:'Empfohlen', frDontsLbl:'Vermeiden' }
+   frDosLbl:'Empfohlen', frDontsLbl:'Vermeiden',
+   hiwEyebrow:'So funktioniert es', hiw:[
+     {t:'Fragebogen ausfüllen', d:'6 kurze Fragen: Zone, Dauer, Alter, Ziel, Haartyp.'},
+     {t:'Foto hinzufügen', d:'Ein Foto der Zone bei Tageslicht. Wird nur für die Analyse verwendet.'},
+     {t:'Analyse erhalten', d:'Unsere KI betrachtet es und sendet Ihnen eine persönliche Pflege-Analyse — kostenlos.'}
+   ],
+   hp:{tag:'Vorschau Ihrer Analyse', metric:'Sichtbare Dichte', badge:'Mäßig', bar1:'Kopfhaut', bar2:'Haarlinie', foot:'Vollständige, persönliche Analyse'} }
+};
+const MKT={
+ fr:{
+   benEyebrow:'Les bénéfices', benTitle:'La connaissance avant l’action.',
+   benefits:[
+     {ic:'🧠', t:'Analyse objective par IA', d:'Une lecture neutre de votre cuir chevelu, sans jugement ni argumentaire commercial.'},
+     {ic:'⚡', t:'Résultat immédiat (2 min)', d:'Pas de rendez-vous, pas d’attente : votre bilan arrive en quelques instants.'},
+     {ic:'🔒', t:'100% en ligne & privé', d:'Depuis votre téléphone. Vos photos servent uniquement à l’analyse.'}
+   ],
+   repEyebrow:'Le résultat', repTitle:'Votre bilan détaillé',
+   feats:[
+     'Analyse IA personnalisée de votre zone',
+     'Profil capillaire noté (densité, cuir chevelu, fibre…)',
+     'Votre semaine type, jour par jour',
+     'Routine de soin sur 90 jours',
+     'Produits adaptés à votre profil',
+     'À faire / à éviter au quotidien',
+     'Points de vigilance & évolution probable'
+   ],
+   faqEyebrow:'Questions fréquentes', faqTitle:'Tout savoir sur Capilario',
+   faq:[
+     {q:'Mes photos sont-elles en sécurité ?', a:'Oui. Vos photos servent uniquement à générer votre analyse et ne sont jamais partagées avec des tiers.'},
+     {q:'Combien de temps dure l’analyse ?', a:'Environ 2 minutes : six questions, une photo, et votre bilan est prêt.'},
+     {q:'Est-ce un avis médical ?', a:'Non. Capilario propose une analyse cosmétique et de soin. Elle ne remplace pas l’avis d’un professionnel de santé.'},
+     {q:'Combien ça coûte ?', a:'L’analyse est gratuite. Le bilan complet personnalisé est à 3,99 €, sans abonnement.'},
+     {q:'Ça marche pour tous les types de cheveux ?', a:'Oui. L’analyse s’adapte à votre type (raides, ondulés, bouclés, crépus) et à votre zone.'},
+     {q:'Je n’ai pas reçu mon bilan, que faire ?', a:'Vérifiez vos spams, puis contactez-nous : on vous le renvoie.'}
+   ],
+   closeTitle:'Ne doutez plus de votre routine.', closeText:'Comprenez ce qui se passe et prenez soin de vos cheveux avec un plan clair.', closeBtn:'Démarrer mon analyse',
+   lkMentions:'Mentions légales', lkCgv:'CGV', lkPrivacy:'Confidentialité', lkContact:'Contact',
+   footNote:'© 2026 Capilario · Analyse cosmétique de soin. Ne constitue pas un avis médical.'
+ },
+ en:{
+   benEyebrow:'The benefits', benTitle:'Knowledge before action.',
+   benefits:[
+     {ic:'🧠', t:'Objective AI analysis', d:'A neutral read of your scalp — no judgment, no sales pitch.'},
+     {ic:'⚡', t:'Instant result (2 min)', d:'No appointment, no waiting: your report is ready in moments.'},
+     {ic:'🔒', t:'100% online & private', d:'From your phone. Your photos are used only for the analysis.'}
+   ],
+   repEyebrow:'The result', repTitle:'Your detailed report',
+   feats:[
+     'Personalized AI analysis of your area',
+     'Scored hair profile (density, scalp, fiber…)',
+     'Your typical week, day by day',
+     '90-day care routine',
+     'Products matched to your profile',
+     'Daily do’s and don’ts',
+     'Points of caution & likely evolution'
+   ],
+   faqEyebrow:'Frequently asked', faqTitle:'Everything about Capilario',
+   faq:[
+     {q:'Are my photos safe?', a:'Yes. Your photos are used only to generate your analysis and are never shared with third parties.'},
+     {q:'How long does the analysis take?', a:'About 2 minutes: six questions, one photo, and your report is ready.'},
+     {q:'Is this medical advice?', a:'No. Capilario offers a cosmetic and care analysis. It does not replace professional medical advice.'},
+     {q:'How much does it cost?', a:'The analysis is free. The full personalized report is €3.99, with no subscription.'},
+     {q:'Does it work for all hair types?', a:'Yes. The analysis adapts to your type (straight, wavy, curly, coily) and your area.'},
+     {q:'I didn’t receive my report, what should I do?', a:'Check your spam folder, then contact us and we’ll resend it.'}
+   ],
+   closeTitle:'Stop second-guessing your routine.', closeText:'Understand what’s happening and care for your hair with a clear plan.', closeBtn:'Start my analysis',
+   lkMentions:'Legal notice', lkCgv:'Terms', lkPrivacy:'Privacy', lkContact:'Contact',
+   footNote:'© 2026 Capilario · Cosmetic care analysis. Not a medical opinion.'
+ },
+ es:{
+   benEyebrow:'Los beneficios', benTitle:'El conocimiento antes de actuar.',
+   benefits:[
+     {ic:'🧠', t:'Análisis objetivo por IA', d:'Una lectura neutra de su cuero cabelludo, sin juicios ni argumentos de venta.'},
+     {ic:'⚡', t:'Resultado inmediato (2 min)', d:'Sin cita, sin esperas: su informe llega en unos instantes.'},
+     {ic:'🔒', t:'100% en línea y privado', d:'Desde su teléfono. Sus fotos se usan solo para el análisis.'}
+   ],
+   repEyebrow:'El resultado', repTitle:'Su informe detallado',
+   feats:[
+     'Análisis por IA personalizado de su zona',
+     'Perfil capilar puntuado (densidad, cuero cabelludo, fibra…)',
+     'Su semana tipo, día a día',
+     'Rutina de cuidado de 90 días',
+     'Productos adaptados a su perfil',
+     'Qué hacer y qué evitar a diario',
+     'Puntos de atención y evolución probable'
+   ],
+   faqEyebrow:'Preguntas frecuentes', faqTitle:'Todo sobre Capilario',
+   faq:[
+     {q:'¿Mis fotos están seguras?', a:'Sí. Sus fotos se usan únicamente para generar su análisis y nunca se comparten con terceros.'},
+     {q:'¿Cuánto dura el análisis?', a:'Unos 2 minutos: seis preguntas, una foto, y su informe está listo.'},
+     {q:'¿Es una opinión médica?', a:'No. Capilario ofrece un análisis cosmético y de cuidado. No sustituye la opinión de un profesional de la salud.'},
+     {q:'¿Cuánto cuesta?', a:'El análisis es gratis. El informe completo personalizado cuesta 3,99 €, sin suscripción.'},
+     {q:'¿Funciona para todo tipo de cabello?', a:'Sí. El análisis se adapta a su tipo (liso, ondulado, rizado, muy rizado) y a su zona.'},
+     {q:'No he recibido mi informe, ¿qué hago?', a:'Revise su carpeta de spam y contáctenos: se lo reenviamos.'}
+   ],
+   closeTitle:'Deje de dudar de su rutina.', closeText:'Entienda qué ocurre y cuide su cabello con un plan claro.', closeBtn:'Comenzar mi análisis',
+   lkMentions:'Aviso legal', lkCgv:'Condiciones', lkPrivacy:'Privacidad', lkContact:'Contacto',
+   footNote:'© 2026 Capilario · Análisis cosmético de cuidado. No constituye una opinión médica.'
+ },
+ de:{
+   benEyebrow:'Die Vorteile', benTitle:'Wissen vor dem Handeln.',
+   benefits:[
+     {ic:'🧠', t:'Objektive KI-Analyse', d:'Eine neutrale Einschätzung Ihrer Kopfhaut — ohne Wertung, ohne Verkaufsgespräch.'},
+     {ic:'⚡', t:'Sofortiges Ergebnis (2 Min.)', d:'Kein Termin, kein Warten: Ihre Analyse ist in Momenten bereit.'},
+     {ic:'🔒', t:'100% online & privat', d:'Von Ihrem Handy aus. Ihre Fotos werden nur für die Analyse verwendet.'}
+   ],
+   repEyebrow:'Das Ergebnis', repTitle:'Ihre detaillierte Analyse',
+   feats:[
+     'Personalisierte KI-Analyse Ihrer Zone',
+     'Bewertetes Haarprofil (Dichte, Kopfhaut, Faser…)',
+     'Ihre typische Woche, Tag für Tag',
+     '90-Tage-Pflegeroutine',
+     'Auf Ihr Profil abgestimmte Produkte',
+     'Tägliche Empfehlungen und No-Gos',
+     'Hinweise & wahrscheinliche Entwicklung'
+   ],
+   faqEyebrow:'Häufige Fragen', faqTitle:'Alles über Capilario',
+   faq:[
+     {q:'Sind meine Fotos sicher?', a:'Ja. Ihre Fotos werden nur zur Erstellung Ihrer Analyse verwendet und niemals an Dritte weitergegeben.'},
+     {q:'Wie lange dauert die Analyse?', a:'Etwa 2 Minuten: sechs Fragen, ein Foto, und Ihre Analyse ist fertig.'},
+     {q:'Ist das eine medizinische Beratung?', a:'Nein. Capilario bietet eine kosmetische Pflege-Analyse. Sie ersetzt keine medizinische Beratung.'},
+     {q:'Was kostet es?', a:'Die Analyse ist kostenlos. Die vollständige, persönliche Analyse kostet 3,99 €, ohne Abo.'},
+     {q:'Funktioniert es für alle Haartypen?', a:'Ja. Die Analyse passt sich Ihrem Typ (glatt, wellig, lockig, kraus) und Ihrer Zone an.'},
+     {q:'Ich habe meine Analyse nicht erhalten, was tun?', a:'Prüfen Sie Ihren Spam-Ordner und kontaktieren Sie uns — wir senden sie erneut.'}
+   ],
+   closeTitle:'Zweifeln Sie nicht mehr an Ihrer Routine.', closeText:'Verstehen Sie, was passiert, und pflegen Sie Ihr Haar mit einem klaren Plan.', closeBtn:'Analyse starten',
+   lkMentions:'Impressum', lkCgv:'AGB', lkPrivacy:'Datenschutz', lkContact:'Kontakt',
+   footNote:'© 2026 Capilario · Kosmetische Pflege-Analyse. Keine medizinische Beratung.'
+ }
 };
 const STEPS_I18N={
  fr:[
@@ -1224,6 +1492,39 @@ const STEPS_I18N={
   {eyebrow:'Ziel',title:'Ihr Hauptziel?',options:['Den Ausfall verlangsamen','Dichte aufbauen','Verstehen, was passiert','Mein Haar pflegen']},
   {eyebrow:'Haartyp',title:'Ihr Haartyp?',options:['Glatt','Wellig','Lockig','Kraus']} ]
 };
+function hiwIcon(i){
+  const I=[
+    '<rect x="4" y="4" width="16" height="16" rx="3" stroke="#556053" stroke-width="1.5"/><path d="M8 9h8M8 13h8M8 17h5" stroke="#B08D57" stroke-width="1.5" stroke-linecap="round"/>',
+    '<rect x="3" y="7" width="18" height="13" rx="3" stroke="#556053" stroke-width="1.5"/><circle cx="12" cy="13" r="3.4" stroke="#556053" stroke-width="1.5"/><path d="M8.5 7l1.3-2.4h4.4L15.5 7" stroke="#B08D57" stroke-width="1.4" stroke-linejoin="round"/>',
+    '<path d="M6 3h8l4 4v14H6Z" stroke="#556053" stroke-width="1.5" stroke-linejoin="round"/><path d="M13 3v5h5" stroke="#556053" stroke-width="1.5"/><path d="M9 13l2 2 4-4" stroke="#B08D57" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>'
+  ];
+  return '<svg viewBox="0 0 24 24" fill="none">'+(I[i]||I[0])+'</svg>';
+}
+function renderHiw(steps){
+  const wrap=document.getElementById('hiwSteps'); if(!wrap) return;
+  wrap.innerHTML=steps.map((s,i)=>`
+    <div class="hiw-step">
+      <div class="n">${i+1}</div>
+      <div class="hiw-ic">${hiwIcon(i)}</div>
+      <div class="hiw-tx"><b>${(s.t||'').replace(/</g,'&lt;')}</b><small>${(s.d||'').replace(/</g,'&lt;')}</small></div>
+    </div>`).join('');
+}
+function renderMkt(m){
+  if(!m) return;
+  const esc2=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  setTxt('#benEyebrow',m.benEyebrow); setTxt('#benTitle',m.benTitle);
+  setTxt('#repEyebrow',m.repEyebrow); setTxt('#repTitle',m.repTitle);
+  setTxt('#faqEyebrow',m.faqEyebrow); setTxt('#faqTitle',m.faqTitle);
+  setTxt('#closeTitle',m.closeTitle); setTxt('#closeText',m.closeText); setTxt('#closeBtn',m.closeBtn);
+  setTxt('#lkMentions',m.lkMentions); setTxt('#lkCgv',m.lkCgv); setTxt('#lkPrivacy',m.lkPrivacy); setTxt('#lkContact',m.lkContact);
+  setTxt('#footNote2',m.footNote);
+  const ben=document.getElementById('benefitsList');
+  if(ben) ben.innerHTML=(m.benefits||[]).map(b=>`<div class="ben"><div class="bn">${esc2(b.ic)}</div><b>${esc2(b.t)}</b><small>${esc2(b.d)}</small></div>`).join('');
+  const feats=document.getElementById('reportFeatsList');
+  if(feats) feats.innerHTML=(m.feats||[]).map(f=>`<li>${esc2(f)}</li>`).join('');
+  const faq=document.getElementById('faqList');
+  if(faq) faq.innerHTML=(m.faq||[]).map(f=>`<details><summary>${esc2(f.q)}</summary><div class="a">${esc2(f.a)}</div></details>`).join('');
+}
 function setTxt(sel,val){ const el=document.querySelector(sel); if(el&&val!=null) el.textContent=val; }
 function setList(sel,arr,tick){ document.querySelectorAll(sel).forEach((el,i)=>{ if(arr[i]==null)return;
   el.innerHTML=(tick?'<span class="tick">✓</span> ':'')+arr[i]; }); }
@@ -1233,6 +1534,10 @@ function applyLang(l){
   setTxt('#landing .brand .tag',d.tag); setTxt('#landing .hero .cap',d.cap);
   setTxt('#landing .eyebrow',d.lEyebrow); setTxt('#landing h1',d.h1); setTxt('#landing .lead',d.lead);
   setList('#landing .trust .chip',d.chips,true);
+  setTxt('#hiwEyebrow',d.hiwEyebrow); renderHiw(d.hiw||[]);
+  if(d.hp){ setTxt('#hpTag',d.hp.tag); setTxt('#hpMetric',d.hp.metric); setTxt('#hpBadge',d.hp.badge);
+    setTxt('#hpBar1',d.hp.bar1); setTxt('#hpBar2',d.hp.bar2); setTxt('#hpFoot',d.hp.foot); }
+  renderMkt(MKT[l]||MKT.fr);
   setTxt('#landing .screen-foot .btn-primary',d.ctaStart); setTxt('#landing .screen-foot .disclaimer',d.disclaimerLanding);
   setTxt('#photo .eyebrow',d.photoEyebrow); setTxt('#photo .q-head h2',d.photoTitle);
   setTxt('#camHint',d.camHint); setTxt('#photo .disclaimer',d.photoDisclaimer);
