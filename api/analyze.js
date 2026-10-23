@@ -33,6 +33,15 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
 
 Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes.
 
+CALIBRAGE DE densityIndex (obligatoire) — note ce que tu VOIS sur la photo, avec cette grille :
+- 85-100 : densité pleine, cuir chevelu quasi invisible sur la zone
+- 70-84 : bonne densité, cuir chevelu visible seulement par endroits
+- 55-69 : densité moyenne, cuir chevelu visible sur une partie de la zone
+- 40-54 : zone nettement clairsemée, cuir chevelu bien visible
+- 0-39 : zone très clairsemée
+Choisis d'abord la tranche d'après la photo, puis un entier précis à l'intérieur de la tranche selon les détails observés et les réponses (ancienneté, zone). Utilise toute l'échelle : n'utilise pas une valeur « par défaut » ou passe-partout, deux photos différentes doivent donner des notes différentes.
+COHÉRENCE : severity doit correspondre à densityIndex (Légère si 70 ou plus, Modérée de 50 à 69, Marquée en dessous de 50), et l'indicateur « Densité apparente » doit afficher exactement densityIndex / 100.
+
 IMPORTANT — Langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.`;
 
 const STAGE_HINT = {
@@ -112,6 +121,7 @@ module.exports = async (req, res) => {
 
     // garde-fous de type
     parsed.densityIndex = parseInt(parsed.densityIndex, 10) || 0;
+    parsed.densityIndex = Math.max(0, Math.min(100, parsed.densityIndex));
     parsed.follicles = parseInt(parsed.follicles, 10) || 0;
     if (!Array.isArray(parsed.indicators)) parsed.indicators = [];
     parsed.indicators = parsed.indicators.filter(x => x && x.k && x.v).slice(0, 6);

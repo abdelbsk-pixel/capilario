@@ -36,7 +36,7 @@ Réponds STRICTEMENT en JSON valide (minifié, une seule ligne, pas de guillemet
 {
  "summary":"5 à 7 phrases d'analyse détaillée, précise et personnalisée (ce qui est observé, ce que ça implique côté soin, et l'approche recommandée)",
  "keyPoints":[{"title":"titre très court (2-4 mots)","text":"1 phrase clé percutante et personnalisée"}],
- "scores":[{"label":"Densité apparente","value":72},{"label":"Uniformité","value":60},{"label":"État du cuir chevelu","value":80},{"label":"Ligne d'implantation","value":65},{"label":"Qualité de la fibre","value":70}],
+ "scores":[{"label":"Densité apparente","value":"<densityIndex de l'analyse>"},{"label":"Uniformité","value":"<entier 0-100>"},{"label":"État du cuir chevelu","value":"<entier 0-100>"},{"label":"Ligne d'implantation","value":"<entier 0-100>"},{"label":"Qualité de la fibre","value":"<entier 0-100>"}],
  "planning":[{"day":"Lundi","action":"geste du jour, court et concret"},{"day":"Mardi","action":"..."},{"day":"Mercredi","action":"..."},{"day":"Jeudi","action":"..."},{"day":"Vendredi","action":"..."},{"day":"Samedi","action":"..."},{"day":"Dimanche","action":"..."}],
  "routine":[{"phase":"Semaines 1-4","steps":["...","..."]},{"phase":"Semaines 5-8","steps":["...","..."]},{"phase":"Semaines 9-12","steps":["...","..."]}],
  "products":[{"id":"id du catalogue uniquement","why":"pourquoi ce produit pour cette personne (1 phrase)","how":"conseil d'usage court"}],
@@ -45,6 +45,7 @@ Réponds STRICTEMENT en JSON valide (minifié, une seule ligne, pas de guillemet
  "cautions":["point de vigilance court","..."],
  "outlook":"1 à 2 phrases réalistes orientées soin et entretien (jamais de promesse de repousse)"
 }
+SCORES : le premier score « Densité apparente » vaut EXACTEMENT le densityIndex de l'analyse (teaser). Les autres scores sont des entiers que tu estimes à partir de l'analyse (indicateurs, sévérité, zone) et du questionnaire, cohérents entre eux, sur toute l'échelle 0-100 (pas de valeurs par défaut ni répétées). Un indicateur décrit comme « reculé », « clairsemé » ou « marqué » doit avoir un score plus bas qu'un indicateur « sain » ou « bon ».
 Donne EXACTEMENT 3 keyPoints, 4 à 6 scores (entiers 0-100), EXACTEMENT 7 jours de planning (lun→dim, un geste réaliste par jour, avec des jours plus légers), 3 phases de routine, 3 à 5 produits (ids du catalogue uniquement), 4 à 6 "dos", 4 à 6 "donts", 2 à 4 points de vigilance. Les conseils dos/donts doivent être personnalisés au profil (zone, type de cheveu, mode de vie) et rester cosmétiques.
 
 Format OBLIGATOIRE : JSON minifié sur une seule ligne, pas de guillemets doubles à l'intérieur des textes, pas de virgule finale, rien d'autre que le JSON.
@@ -196,6 +197,14 @@ module.exports = async (req, res) => {
         return { label: s.label, value: v };
       })
       .slice(0, 6);
+    {
+      const di = parseInt(result && result.densityIndex, 10);
+      if (!isNaN(di) && di > 0) {
+        const v = Math.max(0, Math.min(100, di));
+        const i = report.scores.findIndex(s => /densit|density|dichte/i.test(s.label));
+        if (i >= 0) report.scores[i].value = v;
+      }
+    }
 
     // Produits : on remappe les id choisis vers le vrai produit du catalogue
     const byId = {};

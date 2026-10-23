@@ -6,6 +6,25 @@
 //  Clé Stripe côté serveur uniquement.
 // ============================================================
 
+// Stripe limite chaque métadonnée à 500 caractères : on ne garde que l'essentiel
+// de l'analyse gratuite (sinon le JSON est coupé, illisible, et le bilan complet
+// perd la zone, le stade et la densité).
+function packResult(r) {
+  r = r || {};
+  const cut = (s, n) => String(s == null ? '' : s).slice(0, n);
+  const base = {
+    verdict: cut(r.verdict, 80), zone: cut(r.zone, 40), stage: cut(r.stage, 30),
+    hairType: cut(r.hairType, 20), severity: cut(r.severity, 20),
+    densityIndex: Math.max(0, Math.min(100, parseInt(r.densityIndex, 10) || 0))
+  };
+  let inds = (Array.isArray(r.indicators) ? r.indicators : []).slice(0, 6)
+    .map(x => ({ k: cut(x && x.k, 32), v: cut(x && x.v, 32) }));
+  let s = JSON.stringify(Object.assign({}, base, { indicators: inds }));
+  while (s.length > 490 && inds.length) { inds = inds.slice(0, -1); s = JSON.stringify(Object.assign({}, base, { indicators: inds })); }
+  if (s.length > 490) s = JSON.stringify(base);
+  return s;
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -27,7 +46,7 @@ module.exports = async (req, res) => {
     params.append('line_items[0][price_data][unit_amount]', '399'); // 3,99 €
     params.append('line_items[0][price_data][product_data][name]', 'Bilan capillaire complet — Capilario');
     params.append('metadata[a]', JSON.stringify(answers).slice(0, 490));
-    params.append('metadata[r]', JSON.stringify(result).slice(0, 490));
+    params.append('metadata[r]', packResult(result)); // version compacte : tient toujours dans la limite Stripe
     params.append('metadata[l]', L);
     params.append('allow_promotion_codes', 'true'); // champ code promo sur la page Stripe
     if (email) params.append('customer_email', email);
