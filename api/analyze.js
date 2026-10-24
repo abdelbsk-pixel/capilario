@@ -37,13 +37,14 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
   "analysis": "UN paragraphe d'analyse réel et personnalisé (3 à 5 phrases), rédigé à partir de CE qui est visible sur la photo ET des réponses du questionnaire (zone, ancienneté, âge, type, objectif). Concret, bienveillant, orienté soin. Sans promesse de repousse ni terme médical."
 }
 
-LES 5 MESURES (obligatoires) : note chacune séparément, uniquement d'après la photo, sur la zone analysée :
-- cuirVisible : 0 = cuir chevelu invisible sous les cheveux, 5 = visible sur une partie de la zone, 10 = très visible, zone presque dégarnie
-- couverture : 10 = zone entièrement couverte de cheveux, 5 = couverture partielle, 0 = presque plus de cheveux
-- recul : 0 = ligne d'implantation nette et basse, 5 = recul net aux tempes ou au front, 10 = recul très important (si la zone est le sommet ou la densité générale, note l'éclaircissement de cette zone)
-- epaisseur : 10 = cheveux épais et denses, 5 = moyens, 0 = très fins
-- uniformite : 10 = densité homogène sur toute la zone, 0 = très irrégulière
-Regarde vraiment la photo : ne mets pas des notes moyennes par prudence, utilise toute l'échelle de 0 à 10. Le score de densité sur 100 est calculé à partir de ces 5 notes : ne le donne pas.
+LES 5 MESURES (obligatoires). Note-les d'après la PHOTO SEULE, sur la zone analysée. N'en tiens PAS compte du questionnaire (ancienneté, antécédents, objectif) : il sert uniquement à rédiger l'analyse.
+- cuirVisible : la peau du crâne qu'on voit À TRAVERS les cheveux, entre les cheveux. Le front et les tempes sans cheveux ne comptent PAS ici.
+  0-2 = on ne voit pas la peau sous les cheveux ; 3-4 = on la devine par endroits ; 5-6 = clairement visible sur une partie de la zone ; 7-8 = bien visible sur la plupart de la zone ; 9-10 = zone presque dégarnie.
+- couverture : quantité de cheveux qui couvre la zone. 9-10 = chevelure pleine ; 7-8 = bien couverte avec quelques zones plus fines ; 5-6 = couverture partielle ; 3-4 = clairsemée ; 0-2 = presque plus de cheveux.
+- recul : position de la ligne d'implantation (front et tempes). 0-2 = ligne basse et droite ; 3-4 = golfes légers, courants chez l'adulte ; 5-6 = golfes nets, forme en M visible ; 7-8 = golfes profonds ; 9-10 = front dégarni jusqu'au sommet. Si la zone est le sommet du crâne ou la densité générale, note l'éclaircissement de cette zone avec la même échelle.
+- epaisseur : diamètre apparent des cheveux. 9-10 = épais ; 6-8 = normaux ; 4-5 = plutôt fins ; 0-3 = très fins.
+- uniformite : 9-10 = densité homogène ; 6-8 = légères différences ; 3-5 = différences nettes ; 0-2 = très irrégulière.
+Sois juste : une chevelure épaisse avec des golfes légers n'est PAS une zone clairsemée. Le score de densité sur 100 est calculé à partir de ces 5 notes : ne le donne pas.
 
 Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes. Pour « Densité apparente », mets "à calculer" : la valeur sera remplacée.
 
@@ -70,7 +71,8 @@ function densityFromMeasures(m) {
   const n = k => { const v = Number(m[k]); return Number.isFinite(v) ? Math.max(0, Math.min(10, v)) : null; };
   const cv = n('cuirVisible'), co = n('couverture'), re = n('recul'), ep = n('epaisseur'), un = n('uniformite');
   if ([cv, co, re, ep, un].some(x => x === null)) return null;
-  const s = 0.32 * (10 - cv) + 0.30 * co + 0.16 * (10 - re) + 0.12 * ep + 0.10 * un;   // sur 10
+  // la densité repose surtout sur la peau visible et la couverture ; le recul a son propre indicateur
+  const s = 0.35 * (10 - cv) + 0.35 * co + 0.10 * (10 - re) + 0.12 * ep + 0.08 * un;   // sur 10
   return Math.max(5, Math.min(98, Math.round(s * 10)));
 }
 const SEVERITY = {
@@ -122,6 +124,7 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',   // rapide + pas cher pour le volume gratuit
         max_tokens: 1000,
+        temperature: 0.2,                     // une même photo donne (presque) la même note
         system: SYSTEM,
         messages: [{
           role: 'user',
