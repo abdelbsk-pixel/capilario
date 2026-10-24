@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /studio.html
+
+Sitemap: https://www.capilario.com/sitemap.xml
