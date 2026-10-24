@@ -1,5 +1,5 @@
 // ============================================================
-//  Capilario — Générateur de scripts TikTok (faceless)
+//  Capilario : générateur de scripts TikTok (faceless)
 //  Reçoit { angle, count } et renvoie une liste de scripts prêts
 //  à tourner : hook, texte à l'écran (scène par scène), voix off, CTA.
 //  Cadrage STRICT : soin/analyse, aucune allégation santé, aucun
@@ -37,7 +37,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour ni Markdown, avec ce sch�
     }
   ]
 }
-Donne 4 à 6 scènes par script. Réponds en français, ton naturel et direct.`;
+Donne 4 à 6 scènes par script. Réponds en français, ton naturel et direct. N'utilise jamais de tiret long ni de tiret moyen : des phrases courtes, avec des virgules ou des points.`;
 
 const ANGLES = {
   demo: "Angle DÉMO DE L'OUTIL : on montre l'IA qui scanne les cheveux et sort un résultat. Curiosité + effet tech.",

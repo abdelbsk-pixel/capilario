@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Capilario | Studio à scripts TikTok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A1310; --surface:rgba(28,42,35,.5); --line:rgba(198,240,62,.14); --line-2:rgba(240,240,230,.09);
+  --lime:#C6F03E; --lime-dim:#9BBD34; --gold:#F0D6A0; --text:#EEF2E9; --muted:#93A79B; --danger:#E88A6A;
+  --display:'Fraunces',serif; --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{ font-family:var(--body); color:var(--text); line-height:1.55; min-height:100dvh;
+  background:radial-gradient(70% 55% at 15% 0%, #123024 0%, transparent 55%),
+    radial-gradient(75% 60% at 100% 100%, #1c1620 0%, transparent 55%), var(--ink);
+  -webkit-font-smoothing:antialiased; padding:24px 18px 60px; }
+.wrap{ max-width:760px; margin:0 auto; }
+.brand{ display:flex; align-items:center; gap:10px; margin-bottom:20px }
+.brand .dot{ width:11px;height:11px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px rgba(198,240,62,.15) }
+.brand b{ font-family:var(--mono); font-weight:700; letter-spacing:.14em; font-size:.72rem; text-transform:uppercase }
+h1{ font-family:var(--display); font-weight:600; font-size:2.1rem; line-height:1.05; letter-spacing:-.02em; margin-bottom:8px }
+.lead{ color:var(--muted); margin-bottom:26px }
+.panel{ border:1px solid var(--line); border-radius:18px; background:var(--surface); backdrop-filter:blur(10px); padding:20px; margin-bottom:22px }
+label{ font-size:.8rem; color:var(--muted); display:block; margin-bottom:10px }
+.angles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:18px }
+.angle{ border:1px solid var(--line-2); border-radius:13px; background:rgba(255,255,255,.025); padding:13px 14px; cursor:pointer; transition:all .15s; text-align:left; color:var(--text); font-family:var(--body); font-size:.92rem }
+.angle:hover{ border-color:var(--lime-dim) }
+.angle.sel{ border-color:var(--lime); background:rgba(198,240,62,.1) }
+.angle .t{ font-weight:600; display:block }
+.angle .d{ color:var(--muted); font-size:.76rem; margin-top:3px }
+.row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+.count{ display:flex; gap:6px }
+.count button{ width:40px;height:40px;border-radius:11px;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--text);font-family:var(--mono);cursor:pointer }
+.count button.sel{ border-color:var(--lime); background:rgba(198,240,62,.1); color:var(--lime) }
+.btn{ appearance:none;border:0;cursor:pointer;font-family:var(--body);font-weight:600;font-size:1rem;border-radius:100px;padding:15px 26px;background:var(--lime);color:#0A1310;transition:filter .2s; margin-left:auto }
+.btn:hover{ filter:brightness(1.05) } .btn:disabled{ opacity:.5; cursor:default }
+.loading{ display:none; text-align:center; padding:30px 0; color:var(--muted); font-family:var(--mono); font-size:.8rem }
+.err{ display:none; margin:14px 0; padding:14px; border:1px solid var(--danger); border-radius:12px; background:rgba(232,138,106,.1); color:#ffd9cc; font-size:.85rem; white-space:pre-wrap; word-break:break-word }
+.script{ border:1px solid var(--line); border-radius:18px; background:var(--surface); backdrop-filter:blur(10px); padding:20px; margin-bottom:16px }
+.script .head{ display:flex; align-items:center; gap:10px; margin-bottom:6px }
+.script h3{ font-family:var(--display); font-weight:600; font-size:1.25rem }
+.script .hook{ background:rgba(198,240,62,.1); border-left:3px solid var(--lime); padding:10px 13px; border-radius:8px; margin:12px 0; font-size:.98rem }
+.script .hook b{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; color:var(--lime); text-transform:uppercase; display:block; margin-bottom:3px }
+.scene{ display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line-2) }
+.scene:last-child{ border:0 }
+.scene .n{ font-family:var(--mono); color:var(--lime-dim); font-size:.8rem; flex:none; width:22px }
+.scene .body{ flex:1 }
+.scene .vis{ color:var(--muted); font-size:.82rem; margin-bottom:4px }
+.scene .vis b{ color:var(--gold); font-weight:600 }
+.scene .txt{ font-weight:600; font-size:.94rem }
+.scene .vo{ color:var(--text); font-size:.9rem; opacity:.85; margin-top:2px }
+.cta-line{ margin-top:12px; font-size:.94rem } .cta-line b{ color:var(--lime) }
+.tags{ margin-top:10px; font-family:var(--mono); font-size:.72rem; color:var(--muted) }
+.copy{ margin-left:auto; background:rgba(255,255,255,.05); border:1px solid var(--line-2); color:var(--text); border-radius:100px; padding:6px 14px; font-size:.78rem; cursor:pointer; font-family:var(--body) }
+.copy:hover{ border-color:var(--lime-dim) }
+.disclaimer{ font-size:.72rem; color:var(--muted); opacity:.75; margin-top:20px; line-height:1.5 }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span><b>Capilario · Studio</b></div>
+  <h1>Ta machine à scripts TikTok</h1>
+  <p class="lead">Choisis un angle, le nombre de vidéos, et génère des scripts prêts à tourner, cadrés soin/analyse, sans allégation santé.</p>
+
+  <div class="panel">
+    <label>1. Choisis un angle</label>
+    <div class="angles" id="angles">
+      <button class="angle sel" data-a="demo"><span class="t">🔬 Démo de l'outil</span><span class="d">Le scan IA en action</span></button>
+      <button class="angle" data-a="curiosite"><span class="t">🎯 Curiosité</span><span class="d">« À quel stade es-tu ? »</span></button>
+      <button class="angle" data-a="educ"><span class="t">📚 Éducation</span><span class="d">Ingrédients, honnête</span></button>
+      <button class="angle" data-a="routine"><span class="t">✨ Routine soin</span><span class="d">Entretien réaliste</span></button>
+      <button class="angle" data-a="mix"><span class="t">🎲 Varié</span><span class="d">Un mix des angles</span></button>
+    </div>
+    <label>2. Combien de scripts ?</label>
+    <div class="row">
+      <div class="count" id="count">
+        <button data-n="2">2</button><button data-n="3" class="sel">3</button>
+        <button data-n="4">4</button><button data-n="5">5</button>
+      </div>
+      <button class="btn" id="gen" onclick="generate()">Générer</button>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">Génération des scripts… (quelques secondes)</div>
+  <div class="err" id="err"></div>
+  <div id="out"></div>
+
+  <p class="disclaimer">Rappel : reste sur l'analyse et le soin. Pas de faux avant/après, pas de promesse de repousse : c'est ce qui protège ton compte et fait vendre.</p>
+</div>
+
+<script>
+let angle='demo', count=3;
+document.querySelectorAll('#angles .angle').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#angles .angle').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel'); angle=b.dataset.a;
+});
+document.querySelectorAll('#count button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#count button').forEach(x=>x.classList.remove('sel'));
+  b.classList.add('sel'); count=parseInt(b.dataset.n,10);
+});
+
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function generate(){
+  const gen=document.getElementById('gen'), out=document.getElementById('out');
+  const loading=document.getElementById('loading'), err=document.getElementById('err');
+  gen.disabled=true; loading.style.display='block'; err.style.display='none'; out.innerHTML='';
+  try{
+    const r=await fetch('/api/scripts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({angle,count})});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.detail||d.error||'erreur');
+    render(d.scripts||[]);
+  }catch(e){
+    err.style.display='block'; err.textContent='Erreur : '+String(e.message||e).slice(0,400);
+  }finally{
+    gen.disabled=false; loading.style.display='none';
+  }
+}
+
+function render(scripts){
+  const out=document.getElementById('out');
+  out.innerHTML=scripts.map((s,i)=>{
+    const scenes=(s.scenes||[]).map((sc,j)=>`
+      <div class="scene">
+        <div class="n">${j+1}</div>
+        <div class="body">
+          <div class="vis"><b>Visuel :</b> ${esc(sc.visuel)}</div>
+          <div class="txt">📝 ${esc(sc.texte_ecran)}</div>
+          <div class="vo">🎙️ ${esc(sc.voix_off)}</div>
+        </div>
+      </div>`).join('');
+    return `<div class="script" id="s${i}">
+      <div class="head"><h3>${esc(s.titre||('Script '+(i+1)))}</h3>
+        <button class="copy" onclick="copyScript(${i})">Copier</button></div>
+      <div class="hook"><b>Hook (2 premières s)</b>${esc(s.hook)}</div>
+      ${scenes}
+      <div class="cta-line"><b>CTA :</b> ${esc(s.cta)}</div>
+      ${s.idee_broll?`<div class="tags">🎬 B-roll : ${esc(s.idee_broll)}</div>`:''}
+      ${(s.hashtags&&s.hashtags.length)?`<div class="tags">${s.hashtags.map(esc).join(' ')}</div>`:''}
+    </div>`;
+  }).join('');
+  window._scripts=scripts;
+}
+
+function copyScript(i){
+  const s=window._scripts[i]; if(!s) return;
+  let t=`🎬 ${s.titre}\n\nHOOK: ${s.hook}\n\n`;
+  (s.scenes||[]).forEach((sc,j)=>{ t+=`SCÈNE ${j+1}\nVisuel: ${sc.visuel}\nTexte écran: ${sc.texte_ecran}\nVoix off: ${sc.voix_off}\n\n`; });
+  t+=`CTA: ${s.cta}\n`;
+  if(s.idee_broll) t+=`B-roll: ${s.idee_broll}\n`;
+  if(s.hashtags) t+=(s.hashtags.join(' '))+'\n';
+  navigator.clipboard.writeText(t).then(()=>{
+    const btn=document.querySelector('#s'+i+' .copy'); const old=btn.textContent;
+    btn.textContent='Copié ✓'; setTimeout(()=>btn.textContent=old,1500);
+  });
+}
+</script>
+</body>
+</html>

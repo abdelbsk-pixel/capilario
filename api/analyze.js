@@ -1,13 +1,13 @@
 // ============================================================
-//  Capilario — Analyse capillaire par IA
+//  Capilario : analyse capillaire par IA
 //  Fonction serverless (Vercel). Reçoit la photo + le questionnaire,
 //  demande une analyse à Claude, renvoie un JSON propre au site.
-//  La clé API reste côté serveur (variable d'environnement) —
+//  La clé API reste côté serveur (variable d'environnement) :
 //  elle n'est JAMAIS visible dans le navigateur.
 // ============================================================
 
 const SYSTEM = `Tu es l'assistant d'analyse capillaire de Capilario.
-À partir d'une photo et des réponses d'un questionnaire, tu produis une ANALYSE COSMÉTIQUE ET DE SOIN — jamais un diagnostic médical, jamais un nom de pathologie.
+À partir d'une photo et des réponses d'un questionnaire, tu produis une ANALYSE COSMÉTIQUE ET DE SOIN, jamais un diagnostic médical, jamais un nom de pathologie.
 
 Règles:
 - Décris uniquement ce qui est observable sur la photo (densité apparente, zones plus clairsemées, ligne d'implantation, état visible du cuir chevelu).
@@ -33,7 +33,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
 
 Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes.
 
-CALIBRAGE DE densityIndex (obligatoire) — note ce que tu VOIS sur la photo, avec cette grille :
+CALIBRAGE DE densityIndex (obligatoire) : note ce que tu VOIS sur la photo, avec cette grille :
 - 85-100 : densité pleine, cuir chevelu quasi invisible sur la zone
 - 70-84 : bonne densité, cuir chevelu visible seulement par endroits
 - 55-69 : densité moyenne, cuir chevelu visible sur une partie de la zone
@@ -42,7 +42,20 @@ CALIBRAGE DE densityIndex (obligatoire) — note ce que tu VOIS sur la photo, av
 Choisis d'abord la tranche d'après la photo, puis un entier précis à l'intérieur de la tranche selon les détails observés et les réponses (ancienneté, zone). Utilise toute l'échelle : n'utilise pas une valeur « par défaut » ou passe-partout, deux photos différentes doivent donner des notes différentes.
 COHÉRENCE : severity doit correspondre à densityIndex (Légère si 70 ou plus, Modérée de 50 à 69, Marquée en dessous de 50), et l'indicateur « Densité apparente » doit afficher exactement densityIndex / 100.
 
-IMPORTANT — Langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.`;
+IMPORTANT, langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.
+TYPOGRAPHIE : n'utilise JAMAIS de tiret long ni de tiret moyen dans les textes. Fais des phrases courtes, avec des virgules, des points ou des deux-points.`;
+
+// Pas de tiret long ni moyen dans les textes générés : ça fait « texte d'IA ».
+function noDash(v) {
+  if (typeof v === 'string') return v
+    .replace(/(\d)\s*[\u2013\u2014]\s*(\d)/g, '$1-$2')
+    .replace(/\s*[\u2013\u2014]\s*/g, ', ')
+    .replace(/,\s*([.,;:!?])/g, '$1')
+    .replace(/^,\s*/, '');
+  if (Array.isArray(v)) return v.map(noDash);
+  if (v && typeof v === 'object') { Object.keys(v).forEach(k => { v[k] = noDash(v[k]); }); return v; }
+  return v;
+}
 
 const STAGE_HINT = {
   fr: 'Précoce | Précoce à modéré | Modéré | Installé',
@@ -120,6 +133,7 @@ module.exports = async (req, res) => {
     }
 
     // garde-fous de type
+    parsed = noDash(parsed);
     parsed.densityIndex = parseInt(parsed.densityIndex, 10) || 0;
     parsed.densityIndex = Math.max(0, Math.min(100, parsed.densityIndex));
     parsed.follicles = parseInt(parsed.follicles, 10) || 0;

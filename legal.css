@@ -1,0 +1,36 @@
+/* Capilario : style commun des pages légales (palette « laboratoire eucalyptus ») */
+@font-face{ font-family:'Newsreader'; font-style:normal; font-weight:200 800; font-display:swap; src:url(fonts/newsreader-latin-opsz-normal.woff2) format('woff2'); }
+@font-face{ font-family:'Geist'; font-style:normal; font-weight:100 900; font-display:swap; src:url(fonts/geist-latin-wght-normal.woff2) format('woff2'); }
+:root{
+  --ink:#14201A; --text:#25302A; --muted:#56625B; --sage:#45685A; --gold:#B0884C;
+  --paper:#F3F5F0; --card:#FBFCF9; --line:#D5DCD2;
+  --display:'Newsreader',Georgia,serif; --body:'Geist',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{ font-family:var(--body); color:var(--text); background:var(--paper); line-height:1.65;
+  -webkit-font-smoothing:antialiased; padding:0 20px 80px }
+.wrap{ max-width:760px; margin:0 auto }
+.topbar{ display:flex; align-items:center; gap:10px; padding:22px 0 }
+.logo{ display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink) }
+.logo svg{ width:26px; height:26px }
+.logo b{ font-family:var(--display); font-weight:450; font-size:1.15rem }
+.back{ margin-left:auto; color:var(--muted); text-decoration:none; font-size:.86rem }
+.back:hover{ color:var(--sage) }
+h1{ font-family:var(--display); font-weight:400; font-size:2.2rem; line-height:1.05; letter-spacing:-.02em; color:var(--ink); margin:14px 0 6px }
+.updated{ color:var(--muted); font-size:.82rem; margin-bottom:26px }
+h2{ font-family:var(--display); font-weight:450; font-size:1.35rem; letter-spacing:-.01em; color:var(--ink); margin:30px 0 8px }
+h3{ font-size:1rem; color:var(--ink); margin:18px 0 4px }
+p,li{ font-size:.95rem; color:var(--text) }
+p{ margin:8px 0 }
+ul{ margin:8px 0 8px 20px } li{ margin:5px 0 }
+a{ color:var(--sage) }
+.ph{ background:rgba(176,136,76,.14); border:1px dashed rgba(176,136,76,.55); border-radius:6px;
+  padding:1px 7px; color:#8A6B1E; font-weight:600; font-size:.9em }
+.warn{ background:#F7ECE6; border:1px solid rgba(192,106,78,.4); border-radius:14px; padding:15px 17px;
+  margin:18px 0; font-size:.9rem; color:#7A3E2A }
+.note{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px 17px; margin:18px 0; font-size:.9rem }
+.card{ background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 8px 22px -14px rgba(20,32,26,.22); padding:16px 18px; margin:10px 0 }
+footer{ margin-top:44px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:.78rem;
+  display:flex; flex-wrap:wrap; gap:14px }
+footer a{ color:var(--muted); text-decoration:none } footer a:hover{ color:var(--sage) }
+a:focus-visible{ outline:2px solid var(--sage); outline-offset:3px; border-radius:4px }

@@ -1,5 +1,5 @@
 // ============================================================
-//  Capilario — Création du paiement (Stripe Checkout)
+//  Capilario : création du paiement (Stripe Checkout)
 //  Reçoit { answers, result, email } et renvoie l'URL de paiement.
 //  On range answers + result dans la session (metadata) : au retour,
 //  le rapport est généré à partir de ça, sans dépendre du navigateur.
@@ -44,7 +44,7 @@ module.exports = async (req, res) => {
     params.append('line_items[0][quantity]', '1');
     params.append('line_items[0][price_data][currency]', 'eur');
     params.append('line_items[0][price_data][unit_amount]', '399'); // 3,99 €
-    params.append('line_items[0][price_data][product_data][name]', 'Bilan capillaire complet — Capilario');
+    params.append('line_items[0][price_data][product_data][name]', 'Bilan capillaire complet Capilario');
     params.append('metadata[a]', JSON.stringify(answers).slice(0, 490));
     params.append('metadata[r]', packResult(result)); // version compacte : tient toujours dans la limite Stripe
     params.append('metadata[l]', L);

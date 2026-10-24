@@ -1,12 +1,12 @@
 // ============================================================
-//  Capilario — Génération du rapport complet (après paiement)
+//  Capilario : génération du rapport complet (après paiement)
 //  Reçoit { session_id }. Vérifie AUPRÈS DE STRIPE que la session
 //  est bien payée, puis génère le bilan complet à partir des
 //  données rangées dans la session. Verrou anti-fraude : sans
 //  paiement confirmé, aucun rapport n'est renvoyé.
 // ============================================================
 
-// Catalogue de produits (vraies marques tendance) — l'IA choisit PARMI ceux-ci, par id.
+// Catalogue de produits (vraies marques tendance) : l'IA choisit PARMI ceux-ci, par id.
 // Cadrage cosmétique. Liens fiables (recherche marchande / site marque), éditables.
 // "img" = photo du produit (laisse vide => illustration automatique).
 //   Pour mettre une vraie photo : soit une URL (flux d'affiliation / CDN),
@@ -27,7 +27,19 @@ const CATALOG = [
   { id:'masque', name:'Masque nourrissant intense', brand:'', type:'mask', url:'https://www.amazon.fr/s?k=masque+capillaire+nourrissant', img:'' }
 ];
 
-const SYSTEM = `Tu es l'expert soin capillaire de Capilario. Tu génères un BILAN CAPILLAIRE COMPLET, cosmétique et de soin — JAMAIS médical, jamais de nom de pathologie, AUCUNE promesse de guérison ni de "repousse garantie". Tu parles d'aspect, de densité apparente, d'entretien, de fibre capillaire et de cuir chevelu sain.
+// Pas de tiret long ni moyen dans les textes générés : ça fait « texte d'IA ».
+function noDash(v) {
+  if (typeof v === 'string') return v
+    .replace(/(\d)\s*[\u2013\u2014]\s*(\d)/g, '$1-$2')
+    .replace(/\s*[\u2013\u2014]\s*/g, ', ')
+    .replace(/,\s*([.,;:!?])/g, '$1')
+    .replace(/^,\s*/, '');
+  if (Array.isArray(v)) return v.map(noDash);
+  if (v && typeof v === 'object') { Object.keys(v).forEach(k => { v[k] = noDash(v[k]); }); return v; }
+  return v;
+}
+
+const SYSTEM = `Tu es l'expert soin capillaire de Capilario. Tu génères un BILAN CAPILLAIRE COMPLET, cosmétique et de soin, JAMAIS médical, jamais de nom de pathologie, AUCUNE promesse de guérison ni de "repousse garantie". Tu parles d'aspect, de densité apparente, d'entretien, de fibre capillaire et de cuir chevelu sain.
 Personnalise FORTEMENT selon la zone, l'ancienneté, l'âge, le type de cheveu et l'objectif. Emploie un vocabulaire précis et crédible (fibre capillaire, cuir chevelu, ligne d'implantation, densité apparente, microcirculation, sébum, kératine, cycle pilaire) SANS jamais poser de diagnostic.
 
 PRODUITS : tu choisis UNIQUEMENT parmi le CATALOGUE fourni, par leur "id". Sélectionne 3 à 5 produits réellement pertinents pour CE profil précis et explique, pour chacun, POURQUOI ce produit pour CETTE personne.
@@ -50,7 +62,119 @@ Donne EXACTEMENT 3 keyPoints, 4 à 6 scores (entiers 0-100), EXACTEMENT 7 jours 
 
 Format OBLIGATOIRE : JSON minifié sur une seule ligne, pas de guillemets doubles à l'intérieur des textes, pas de virgule finale, rien d'autre que le JSON.
 
-LANGUE : rédige TOUT (summary, keyPoints, scores.label, planning.day + planning.action, phases, steps, why, how, dos, donts, cautions, outlook) dans la langue demandée (fr = français, en = anglais, es = espagnol, de = allemand). Traduis les libellés de jour (Lundi→Monday/Lunes/Montag) et de phase.`;
+LANGUE : rédige TOUT (summary, keyPoints, scores.label, planning.day + planning.action, phases, steps, why, how, dos, donts, cautions, outlook) dans la langue demandée (fr = français, en = anglais, es = espagnol, de = allemand). Traduis les libellés de jour (Lundi→Monday/Lunes/Montag) et de phase.
+TYPOGRAPHIE : n'utilise JAMAIS de tiret long ni de tiret moyen dans les textes. Fais des phrases courtes, avec des virgules, des points ou des deux-points.`;
+
+// ============================================================
+//  Email du bilan complet (envoyé une seule fois après paiement)
+// ============================================================
+const EMF = {
+  fr:{ subject:'Votre bilan capillaire complet | Capilario', title:'Votre bilan capillaire complet',
+    intro:'Merci pour votre confiance. Voici votre bilan complet, à garder sous la main.',
+    zone:'Zone', stage:'Stade', key:'À retenir', scores:'Votre profil en détail', planning:'Votre semaine type',
+    routine:'Votre routine sur 90 jours', reco:'Produits recommandés', see:'Voir le produit', dos:'À faire', donts:'À éviter',
+    cautions:'Points de vigilance', outlook:'Évolution probable', back:'Revoir mon bilan en ligne',
+    disclaimer:'Analyse cosmétique à visée de soin. Ne constitue pas un avis médical.' },
+  en:{ subject:'Your full hair report | Capilario', title:'Your full hair report',
+    intro:'Thank you for your trust. Here is your full report, to keep at hand.',
+    zone:'Area', stage:'Stage', key:'Key takeaways', scores:'Your profile in detail', planning:'Your typical week',
+    routine:'Your 90-day routine', reco:'Recommended products', see:'View product', dos:'Do', donts:'Avoid',
+    cautions:'Points of caution', outlook:'Likely evolution', back:'View my report online',
+    disclaimer:'Cosmetic care analysis. Not a medical opinion.' },
+  es:{ subject:'Su informe capilar completo | Capilario', title:'Su informe capilar completo',
+    intro:'Gracias por su confianza. Aquí tiene su informe completo, para tenerlo a mano.',
+    zone:'Zona', stage:'Etapa', key:'Para recordar', scores:'Su perfil en detalle', planning:'Su semana tipo',
+    routine:'Su rutina de 90 días', reco:'Productos recomendados', see:'Ver el producto', dos:'Hacer', donts:'Evitar',
+    cautions:'Puntos de atención', outlook:'Evolución probable', back:'Ver mi informe en línea',
+    disclaimer:'Análisis cosmético de cuidado. No constituye una opinión médica.' },
+  de:{ subject:'Ihre vollständige Haar-Analyse | Capilario', title:'Ihre vollständige Haar-Analyse',
+    intro:'Danke für Ihr Vertrauen. Hier ist Ihre vollständige Analyse zum Aufbewahren.',
+    zone:'Zone', stage:'Stadium', key:'Zum Merken', scores:'Ihr Profil im Detail', planning:'Ihre typische Woche',
+    routine:'Ihre 90-Tage-Routine', reco:'Empfohlene Produkte', see:'Produkt ansehen', dos:'Empfohlen', donts:'Vermeiden',
+    cautions:'Hinweise', outlook:'Wahrscheinliche Entwicklung', back:'Analyse online ansehen',
+    disclaimer:'Kosmetische Pflege-Analyse. Keine medizinische Beratung.' }
+};
+const escH = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const maskMail = m => { const [u, d] = String(m || '').split('@'); return d ? (u.slice(0, 1) + '•••@' + d) : ''; };
+
+function buildFullEmail(rep, teaser, L, link) {
+  const t = EMF[L] || EMF.fr, tz = teaser || {};
+  const C = { ink:'#14201A', text:'#25302A', muted:'#56625B', euca:'#45685A', gold:'#B0884C', clay:'#B0603F', line:'#E3E8E0', bg:'#F3F5F0' };
+  const serif = "Georgia,'Times New Roman',serif", sans = 'Arial,Helvetica,sans-serif';
+  const h2 = s => `<tr><td style="padding:28px 0 10px;font-family:${serif};font-size:20px;color:${C.ink}">${escH(s)}</td></tr>`;
+  const row = html => `<tr><td style="font-family:${sans};font-size:14px;line-height:1.55;color:${C.text}">${html}</td></tr>`;
+  let b = '';
+  b += `<tr><td style="font-family:${serif};font-size:26px;line-height:1.15;color:${C.ink};padding-bottom:10px">${escH(tz.verdict || t.title)}</td></tr>`;
+  if (rep.summary) b += row(`<p style="margin:0">${escH(rep.summary)}</p>`);
+  b += `<tr><td style="padding-top:16px"><table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${C.line};border-bottom:1px solid ${C.line}"><tr>
+    <td width="50%" style="padding:10px 0;font-family:${sans};font-size:12px;color:${C.muted}">${escH(t.zone)}<br><b style="font-size:14px;color:${C.ink}">${escH(tz.zone || '-')}</b></td>
+    <td width="50%" style="padding:10px 0 10px 14px;border-left:1px solid ${C.line};font-family:${sans};font-size:12px;color:${C.muted}">${escH(t.stage)}<br><b style="font-size:14px;color:${C.ink}">${escH(tz.stage || '-')}</b></td></tr></table></td></tr>`;
+  if ((rep.keyPoints || []).length) {
+    b += h2(t.key);
+    rep.keyPoints.forEach(k => { b += row(`<p style="margin:0 0 10px"><span style="color:${C.gold}">●</span> <b style="color:${C.ink}">${escH(k.title)}</b><br><span style="color:${C.muted}">${escH(k.text)}</span></p>`); });
+  }
+  if ((rep.scores || []).length) {
+    b += h2(t.scores);
+    rep.scores.forEach(s => {
+      const v = Math.max(0, Math.min(100, parseInt(s.value, 10) || 0)), w = Math.max(2, Math.min(98, v));
+      const col = v >= 70 ? C.euca : v >= 45 ? C.gold : C.clay;
+      b += `<tr><td style="padding:0 0 12px"><table width="100%" cellpadding="0" cellspacing="0"><tr>
+        <td style="font-family:${sans};font-size:14px;color:${C.ink}">${escH(s.label)}</td>
+        <td align="right" style="font-family:${sans};font-size:14px;font-weight:bold;color:${C.ink}">${v}<span style="font-weight:normal;color:${C.muted};font-size:12px">/100</span></td></tr></table>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:6px"><tr>
+        <td width="${w}%" style="background:${col};height:6px;font-size:0;line-height:0">&nbsp;</td>
+        <td width="${100 - w}%" style="background:${C.line};height:6px;font-size:0;line-height:0">&nbsp;</td></tr></table></td></tr>`;
+    });
+  }
+  if ((rep.planning || []).length) {
+    b += h2(t.planning);
+    b += `<tr><td><table width="100%" cellpadding="0" cellspacing="0">` + rep.planning.map(p =>
+      `<tr><td width="90" style="padding:9px 0;border-top:1px solid ${C.line};font-family:${serif};font-size:15px;color:${C.ink};vertical-align:top">${escH(p.day)}</td>
+       <td style="padding:9px 0;border-top:1px solid ${C.line};font-family:${sans};font-size:14px;color:${C.text}">${escH(p.action)}</td></tr>`).join('') + `</table></td></tr>`;
+  }
+  if ((rep.routine || []).length) {
+    b += h2(t.routine);
+    rep.routine.forEach((ph, i) => {
+      b += row(`<p style="margin:0 0 4px"><b style="color:${C.ink}">${i + 1}. ${escH(ph.phase)}</b></p><ul style="margin:0 0 14px;padding-left:20px">${(ph.steps || []).map(s => `<li style="margin:3px 0">${escH(s)}</li>`).join('')}</ul>`);
+    });
+  }
+  if ((rep.products || []).length) {
+    b += h2(t.reco);
+    rep.products.forEach(p => {
+      b += `<tr><td style="padding:0 0 12px"><table width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border:1px solid ${C.line};border-radius:12px"><tr><td style="padding:14px 16px;font-family:${sans};font-size:14px;line-height:1.5;color:${C.text}">
+        ${p.brand ? `<span style="color:${C.gold};font-size:12px;font-weight:bold">${escH(p.brand)}</span><br>` : ''}
+        <span style="font-family:${serif};font-size:17px;color:${C.ink}">${escH(p.name)}</span>
+        ${p.why ? `<br>${escH(p.why)}` : ''}${p.how ? `<br><span style="color:${C.euca}">${escH(p.how)}</span>` : ''}
+        ${p.url && p.url !== '#' ? `<br><a href="${escH(p.url)}" style="display:inline-block;margin-top:8px;color:${C.ink};font-weight:bold;text-decoration:underline">${escH(t.see)}</a>` : ''}
+      </td></tr></table></td></tr>`;
+    });
+  }
+  const list = (arr, mark, col) => (arr || []).map(x => `<li style="margin:4px 0;list-style:none"><span style="color:${col};font-weight:bold">${mark}</span> ${escH(x)}</li>`).join('');
+  if ((rep.dos || []).length || (rep.donts || []).length) {
+    b += h2(t.dos + ' / ' + t.donts);
+    if ((rep.dos || []).length) b += row(`<p style="margin:0 0 4px"><b style="color:${C.euca}">${escH(t.dos)}</b></p><ul style="margin:0 0 12px;padding:0">${list(rep.dos, '✓', C.euca)}</ul>`);
+    if ((rep.donts || []).length) b += row(`<p style="margin:0 0 4px"><b style="color:${C.clay}">${escH(t.donts)}</b></p><ul style="margin:0;padding:0">${list(rep.donts, '✕', C.clay)}</ul>`);
+  }
+  if ((rep.cautions || []).length) { b += h2(t.cautions); b += row(`<ul style="margin:0;padding-left:20px">${rep.cautions.map(c => `<li style="margin:4px 0">${escH(c)}</li>`).join('')}</ul>`); }
+  if (rep.outlook) {
+    b += `<tr><td style="padding-top:24px"><table width="100%" cellpadding="0" cellspacing="0" style="background:#0D1512;border-radius:14px"><tr><td style="padding:18px 20px">
+      <div style="font-family:${sans};font-size:12px;color:#D2B07A">${escH(t.outlook)}</div>
+      <div style="font-family:${serif};font-size:16px;line-height:1.5;color:#F3F5F0;margin-top:6px">${escH(rep.outlook)}</div></td></tr></table></td></tr>`;
+  }
+  return `<!DOCTYPE html><html><body style="margin:0;background:${C.bg}">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:${C.bg}"><tr><td align="center" style="padding:24px 12px">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">
+    <tr><td style="padding:0 4px 16px;font-family:${serif};font-size:20px;color:${C.ink}">Capilario</td></tr>
+    <tr><td style="background:#FBFCF9;border-radius:18px;padding:26px 24px;border:1px solid ${C.line}">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr><td style="font-family:${sans};font-size:13px;color:${C.muted};padding-bottom:14px">${escH(t.intro)}</td></tr>
+        ${b}
+        ${link ? `<tr><td style="padding-top:24px"><a href="${escH(link)}" style="display:inline-block;background:${C.ink};color:#F3F5F0;text-decoration:none;font-family:${sans};font-size:14px;font-weight:bold;padding:13px 20px;border-radius:12px">${escH(t.back)}</a></td></tr>` : ''}
+      </table>
+    </td></tr>
+    <tr><td style="padding:16px 4px;font-family:${sans};font-size:11px;line-height:1.5;color:${C.muted};text-align:center">${escH(t.disclaimer)}<br>Capilario · capilario.com</td></tr>
+  </table></td></tr></table></body></html>`;
+}
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -84,7 +208,7 @@ module.exports = async (req, res) => {
     // 3) Générer le bilan complet
     const catalogForAI = CATALOG.map(p => ({
       id: p.id,
-      nom: (p.brand ? p.brand + ' — ' : '') + p.name,
+      nom: (p.brand ? p.brand + ' · ' : '') + p.name,
       type: p.type
     }));
     const userText =
@@ -165,6 +289,7 @@ module.exports = async (req, res) => {
     }
 
     // --- Normalisation / garde-fous ---
+    report = noDash(report);
     const asStrArr = (a, n) => (Array.isArray(a) ? a : [])
       .filter(x => typeof x === 'string' && x.trim()).slice(0, n);
 
@@ -244,6 +369,42 @@ module.exports = async (req, res) => {
     // on renvoie aussi le teaser + la langue pour l'affichage
     report._teaser = result;
     report._lang = L;
+
+    // --- Envoi du bilan complet par email (une seule fois par paiement) ---
+    const to = (session.customer_details && session.customer_details.email) || session.customer_email || '';
+    if (to) {
+      report._mail = { to: maskMail(to) };
+      if (session.metadata?.m !== '1') {
+        try {
+          const site = process.env.SITE_URL || 'https://capilario.com';
+          const link = site + '/?paid=1&session_id=' + encodeURIComponent(session_id);
+          const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 7000);
+          const mRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST', signal: ctrl.signal,
+            headers: { 'Authorization': 'Bearer ' + process.env.RESEND_API_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: process.env.MAIL_FROM || 'Capilario <onboarding@resend.dev>',
+              to: [to],
+              subject: (EMF[L] || EMF.fr).subject,
+              html: buildFullEmail(report, result, L, link)
+            })
+          });
+          clearTimeout(timer);
+          if (mRes.ok) {
+            // on note dans la session Stripe que l'email est parti (évite les doublons au rechargement)
+            const up = new URLSearchParams(); up.append('metadata[m]', '1');
+            await fetch('https://api.stripe.com/v1/checkout/sessions/' + encodeURIComponent(session_id), {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + process.env.STRIPE_SECRET_KEY, 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: up.toString()
+            }).catch(() => {});
+          } else {
+            report._mail.failed = true;
+            report._mail.detail = (await mRes.text()).slice(0, 300);
+          }
+        } catch (e) { report._mail.failed = true; report._mail.detail = String(e).slice(0, 200); }
+      }
+    }
     return res.status(200).json(report);
   } catch (err) {
     return res.status(500).json({ error: 'Erreur serveur', detail: String(err) });

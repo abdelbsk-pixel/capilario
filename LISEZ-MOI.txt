@@ -1,16 +1,30 @@
-CAPILARIO — dossier prêt à déployer (gratuit)
+CAPILARIO : dossier prêt à déployer (gratuit)
 =============================================
 
-Contenu :
+Fichiers :
   index.html            -> le site
-  api/analyze.js        -> analyse IA de la photo
-  api/send-report.js    -> envoi du bilan gratuit par email.
+  fonts/                -> polices du site (Newsreader + Geist), hébergées avec le site
+  img/                  -> photos du site (exemple d'analyse, produits)
+  favicon.ico, favicon.svg, apple-touch-icon.png, icon-192.png, icon-512.png, site.webmanifest -> icônes du site
+  og-image.jpg          -> image affichée quand on partage le lien (WhatsApp, Insta...)
+  legal.css             -> style des pages légales
+  mentions-legales.html, confidentialite.html, cgv.html -> pages légales
+  api/analyze.js        -> analyse IA de la photo (gratuit)
+  api/send-report.js    -> envoi du bilan gratuit par email
+  api/checkout.js       -> création du paiement Stripe (3,99 €)
+  api/report.js         -> génération du bilan complet après paiement
+  api/translate.js      -> traduction des bilans quand on change de langue
   package.json          -> réglage technique (ne pas y toucher)
 
-Variables d'environnement à mettre sur Vercel :
-  ANTHROPIC_API_KEY  = ta clé Anthropic (sk-ant-...)   [analyse IA]
-  RESEND_API_KEY     = ta clé Resend (re_...)          [envoi email]
-  MAIL_FROM          = "Capilario <bilan@capilario.com>"  (quand ton domaine est vérifié)
-  SITE_URL           = https://capilario.vercel.app   (ou ton domaine)
+Variables d'environnement sur Vercel :
+  ANTHROPIC_API_KEY  = clé Anthropic (sk-ant-...)     [analyse IA]
+  RESEND_API_KEY     = clé Resend (re_...)            [email]
+  STRIPE_SECRET_KEY  = clé secrète Stripe (sk_test_... puis sk_live_...)  [paiement]
+  SITE_URL           = https://capilario.com
+  MAIL_FROM          = "Capilario <contact@capilario.com>" (quand le domaine est vérifié chez Resend)
 
-Après toute modif des fichiers OU des variables : redéploie.
+IMPORTANT structure :
+  - analyze.js, send-report.js, checkout.js, report.js, translate.js doivent TOUS être DANS le dossier api/ (jamais à la racine).
+  - les dossiers fonts/ et img/ doivent être à la racine, à côté de index.html (sinon polices ou photos manquantes).
+
+Après toute modif de fichiers ou de variables : GitHub redéploie tout seul.
