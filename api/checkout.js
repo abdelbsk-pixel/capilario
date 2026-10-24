@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
   try {
     const { answers = {}, result = {}, email = '', lang = 'fr' } = req.body || {};
     const L = ['fr','en','es','de'].includes(lang) ? lang : 'fr';
-    const site = process.env.SITE_URL || 'https://capilario-pnxy.vercel.app';
+    const site = process.env.SITE_URL || 'https://www.capilario.com';
 
     const params = new URLSearchParams();
     params.append('mode', 'payment');

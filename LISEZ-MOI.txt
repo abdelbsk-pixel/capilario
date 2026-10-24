@@ -20,8 +20,8 @@ Variables d'environnement sur Vercel :
   ANTHROPIC_API_KEY  = clé Anthropic (sk-ant-...)     [analyse IA]
   RESEND_API_KEY     = clé Resend (re_...)            [email]
   STRIPE_SECRET_KEY  = clé secrète Stripe (sk_test_... puis sk_live_...)  [paiement]
-  SITE_URL           = https://capilario.com
-  MAIL_FROM          = "Capilario <contact@capilario.com>" (quand le domaine est vérifié chez Resend)
+  SITE_URL           = https://www.capilario.com (déjà configuré sur Vercel)
+  MAIL_FROM          = "Capilario <contact@capilario.com>" (déjà configuré sur Vercel)
 
 IMPORTANT structure :
   - analyze.js, send-report.js, checkout.js, report.js, translate.js doivent TOUS être DANS le dossier api/ (jamais à la racine).

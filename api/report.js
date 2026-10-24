@@ -376,7 +376,7 @@ module.exports = async (req, res) => {
       report._mail = { to: maskMail(to) };
       if (session.metadata?.m !== '1') {
         try {
-          const site = process.env.SITE_URL || 'https://capilario.com';
+          const site = process.env.SITE_URL || 'https://www.capilario.com';
           const link = site + '/?paid=1&session_id=' + encodeURIComponent(session_id);
           const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 7000);
           const mRes = await fetch('https://api.resend.com/emails', {

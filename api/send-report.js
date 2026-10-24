@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
     const L = ['fr','en','es','de'].includes(lang) ? lang : 'fr';
 
     const from = process.env.MAIL_FROM || 'Capilario <onboarding@resend.dev>';
-    const siteUrl = process.env.SITE_URL || 'https://capilario.vercel.app';
+    const siteUrl = process.env.SITE_URL || 'https://www.capilario.com';
 
     const apiRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
