@@ -37,7 +37,7 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
   "analysis": "UN paragraphe d'analyse réel et personnalisé (3 à 5 phrases), rédigé à partir de CE qui est visible sur la photo ET des réponses du questionnaire (zone, ancienneté, âge, type, objectif). Concret, bienveillant, orienté soin. Sans promesse de repousse ni terme médical."
 }
 
-LES 5 MESURES (obligatoires). Note-les d'après la PHOTO SEULE, sur la zone analysée. N'en tiens PAS compte du questionnaire (ancienneté, antécédents, objectif) : il sert uniquement à rédiger l'analyse.
+LES 5 MESURES (obligatoires). Note-les d'après la PHOTO SEULE, sur la zone analysée. Ne tiens PAS compte du questionnaire (ancienneté, antécédents, objectif) : il sert uniquement à rédiger l'analyse.
 - cuirVisible : la peau du crâne qu'on voit À TRAVERS les cheveux, entre les cheveux. Le front et les tempes sans cheveux ne comptent PAS ici.
   0-2 = on ne voit pas la peau sous les cheveux ; 3-4 = on la devine par endroits ; 5-6 = clairement visible sur une partie de la zone ; 7-8 = bien visible sur la plupart de la zone ; 9-10 = zone presque dégarnie.
 - couverture : quantité de cheveux qui couvre la zone. 9-10 = chevelure pleine ; 7-8 = bien couverte avec quelques zones plus fines ; 5-6 = couverture partielle ; 3-4 = clairsemée ; 0-2 = presque plus de cheveux.
