@@ -238,7 +238,7 @@ h1 .w > span{ display:inline-block; transform:translateY(105%); animation:wordUp
 .lens-ring .ticks{ stroke:rgba(20,32,26,.22) }
 .lens-ring .arc{ stroke:var(--euca); stroke-dasharray:408.4; stroke-dashoffset:408.4;
   animation:arcIn 1.6s var(--ease-out) forwards; animation-delay:.75s; filter:drop-shadow(0 0 3px rgba(69,104,90,.35)) }
-@keyframes arcIn{ to{ stroke-dashoffset:114.4 } }  /* 72 % */
+@keyframes arcIn{ to{ stroke-dashoffset:147 } }  /* 64 % */
 .lens-ring .knob{ fill:var(--card); stroke:var(--euca); stroke-width:2;
   offset-path:none; opacity:0; animation:ldIn .4s ease forwards; animation-delay:2.1s }
 .lens-glass{ position:absolute; inset:10px; border-radius:50%; overflow:hidden; background:
@@ -854,7 +854,7 @@ h1 .w > span{ display:inline-block; transform:translateY(105%); animation:wordUp
         <span class="lens-shine"></span>
       </div>
       <span class="shot-chip zone hv-zone">Tempes · zone à surveiller</span>
-      <span class="shot-chip dens"><span class="hv-dens">Densité apparente</span> <b>72/100</b></span>
+      <span class="shot-chip dens"><span class="hv-dens">Densité apparente</span> <b>64/100</b></span>
     </div>
     <p class="stage-cap" id="stageCap">Une photo suffit pour savoir où en sont vos cheveux.</p>
   </div>
@@ -893,11 +893,11 @@ h1 .w > span{ display:inline-block; transform:translateY(105%); animation:wordUp
               <circle class="track" cx="68" cy="68" r="65" stroke-width="3"/>
               <circle class="arc" cx="68" cy="68" r="65" stroke-width="4" stroke-linecap="round" transform="rotate(-90 68 68)"/>
             </svg>
-            <div class="lens-glass"><div class="lens-num"><b>72</b><small>/100</small></div></div>
+            <div class="lens-glass"><div class="lens-num"><b>64</b><small>/100</small></div></div>
           </div>
           <div class="hp-info">
             <div class="hp-metric" id="hpMetric">Densité apparente</div>
-            <span class="hp-badge" id="hpBadge">Légère</span>
+            <span class="hp-badge" id="hpBadge">Modérée</span>
             <div class="hp-zone" id="hpZone">Zone : <b>tempes</b> · stade précoce</div>
           </div>
         </div>
@@ -1788,7 +1788,7 @@ const I18N={
      {t:'Ajoutez une photo', d:"Une photo de la zone, à la lumière du jour. Elle sert uniquement à l'analyse."},
      {t:'Recevez votre analyse', d:"L'IA observe votre photo et vous donne votre analyse, offerte."}
    ],
-   hp:{tag:"Exemple d'analyse", metric:'Densité apparente', badge:'Légère', zone:'Zone : <b>tempes</b> · stade précoce', bar1:'Cuir chevelu', bar2:"Ligne d'implantation", foot:'Routine, produits et planning : dans le bilan complet'},
+   hp:{tag:"Exemple d'analyse", metric:'Densité apparente', badge:'Modérée', zone:'Zone : <b>tempes</b> · stade précoce', bar1:'Cuir chevelu', bar2:"Ligne d'implantation", foot:'Routine, produits et planning : dans le bilan complet'},
    hv:{zone:'Tempes · zone à surveiller', dens:'Densité apparente'} },
  en:{ tag:'AI Analysis', trWorking:'Translating…', trFail:'Translation unavailable right now.', cap:'One photo shows where your hair stands.', lEyebrow:'Free analysis · no sign-up',
    h1:'Analyze your hair with AI in 2 minutes.',
@@ -1829,7 +1829,7 @@ const I18N={
      {t:'Add a photo', d:'A photo of the area in daylight. Used only for the analysis.'},
      {t:'Get your analysis', d:'The AI reviews your photo and gives you your analysis, free.'}
    ],
-   hp:{tag:'Sample analysis', metric:'Apparent density', badge:'Mild', zone:'Area: <b>temples</b> · early stage', bar1:'Scalp', bar2:'Hairline', foot:'Routine, products and planning: in the full report'},
+   hp:{tag:'Sample analysis', metric:'Apparent density', badge:'Moderate', zone:'Area: <b>temples</b> · early stage', bar1:'Scalp', bar2:'Hairline', foot:'Routine, products and planning: in the full report'},
    hv:{zone:'Temples · area to watch', dens:'Apparent density'} },
  es:{ tag:'Análisis por IA', trWorking:'Traduciendo…', trFail:'Traducción no disponible por ahora.', cap:'Una foto basta para saber cómo está su cabello.', lEyebrow:'Análisis gratis · sin registro',
    h1:'Analice su cabello con IA en 2 minutos.',
@@ -1870,7 +1870,7 @@ const I18N={
      {t:'Añada una foto', d:'Una foto de la zona con luz natural. Se usa solo para el análisis.'},
      {t:'Reciba su análisis', d:'La IA observa su foto y le da su análisis, gratis.'}
    ],
-   hp:{tag:'Ejemplo de análisis', metric:'Densidad aparente', badge:'Leve', zone:'Zona: <b>sienes</b> · etapa inicial', bar1:'Cuero cabelludo', bar2:'Línea de implantación', foot:'Rutina, productos y planificación: en el informe completo'},
+   hp:{tag:'Ejemplo de análisis', metric:'Densidad aparente', badge:'Moderada', zone:'Zona: <b>sienes</b> · etapa inicial', bar1:'Cuero cabelludo', bar2:'Línea de implantación', foot:'Rutina, productos y planificación: en el informe completo'},
    hv:{zone:'Sienes · zona a vigilar', dens:'Densidad aparente'} },
  de:{ tag:'KI-Analyse', trWorking:'Wird übersetzt…', trFail:'Übersetzung gerade nicht verfügbar.', cap:'Ein Foto zeigt, wie es um Ihr Haar steht.', lEyebrow:'Kostenlose Analyse · ohne Anmeldung',
    h1:'Analysieren Sie Ihr Haar mit KI in 2 Minuten.',
@@ -1911,7 +1911,7 @@ const I18N={
      {t:'Foto hinzufügen', d:'Ein Foto der Zone bei Tageslicht. Wird nur für die Analyse verwendet.'},
      {t:'Analyse erhalten', d:'Die KI betrachtet Ihr Foto und gibt Ihnen Ihre Analyse, kostenlos.'}
    ],
-   hp:{tag:'Beispielanalyse', metric:'Sichtbare Dichte', badge:'Leicht', zone:'Zone: <b>Schläfen</b> · frühes Stadium', bar1:'Kopfhaut', bar2:'Haarlinie', foot:'Routine, Produkte und Wochenplan: in der vollständigen Analyse'},
+   hp:{tag:'Beispielanalyse', metric:'Sichtbare Dichte', badge:'Mäßig', zone:'Zone: <b>Schläfen</b> · frühes Stadium', bar1:'Kopfhaut', bar2:'Haarlinie', foot:'Routine, Produkte und Wochenplan: in der vollständigen Analyse'},
    hv:{zone:'Schläfen · im Blick behalten', dens:'Sichtbare Dichte'} }
 };
 const MKT={
@@ -2097,7 +2097,7 @@ function mkHTML(kind,o){
   const E=x=>String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   if(kind==='scores'){
     const dv=(o.density==null||isNaN(o.density))?null:Math.max(0,Math.min(100,Math.round(o.density)));
-    return (d.scoreLbls||F.scoreLbls).map((t,i)=>{ const on=i===0&&dv!=null, v=on?dv:(i===0?72:MK_SAMPLE.scores[(i-1)%4]);
+    return (d.scoreLbls||F.scoreLbls).map((t,i)=>{ const on=i===0&&dv!=null, v=on?dv:(i===0?64:MK_SAMPLE.scores[(i-1)%4]);
       return `<div class="mk-score${on?' on':''}"><span>${E(t)}</span><span class="bt"><i style="width:${v}%"></i></span><span class="v">${v}</span></div>`; }).join('');
   }
   if(kind==='week') return `<div class="mk-fade">${(d.days||F.days).slice(0,4).map((x,i)=>`<div class="mk-row"><b>${E(x)}</b><span class="bx">${E(MK_SAMPLE.week[i])}</span></div>`).join('')}</div>`;
@@ -2155,7 +2155,7 @@ function renderMkt(m){
   setTxt('#ofFreeT',of.freeT); setTxt('#ofFreeP',of.freeP); setTxt('#ofPaidT',of.paidT); setTxt('#ofPaidP',of.paidP);
   setTxt('#ofPaidSub',of.paidSub); setTxt('#ofMore',of.more); setTxt('#ofLock',of.lock);
   const opl=document.getElementById('ofPaidList');
-  if(opl) opl.innerHTML=(of.paid||[]).map(([k,t])=>`<div class="of-sec"><div class="lk-lbl">${esc2(t)}</div><div aria-hidden="true">${mkHTML(k,{density:72})}</div></div>`).join('');
+  if(opl) opl.innerHTML=(of.paid||[]).map(([k,t])=>`<div class="of-sec"><div class="lk-lbl">${esc2(t)}</div><div aria-hidden="true">${mkHTML(k,{density:64})}</div></div>`).join('');
   const faq=document.getElementById('faqList');
   if(faq) faq.innerHTML=(m.faq||[]).map(f=>`<details><summary>${esc2(f.q)}</summary><div class="a">${esc2(f.a)}</div></details>`).join('');
 }

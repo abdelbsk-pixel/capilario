@@ -15,13 +15,19 @@ Règles:
 - Adapte l'analyse aux réponses du questionnaire (zone, ancienneté, âge, type de cheveu, objectif).
 - Si la photo est inexploitable (floue, aucun cheveu visible), renvoie verdict="Photo inexploitable" et des champs neutres.
 
-Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, avec exactement ce schéma:
+Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, avec exactement ce schéma (dans cet ordre) :
 {
+  "observation": "2 à 3 phrases factuelles sur ce que tu VOIS sur la photo de la zone : cuir chevelu visible ou non, ligne d'implantation, finesse des cheveux, régularité. Écris-les AVANT de noter.",
+  "mesures": {
+    "cuirVisible": entier 0-10,
+    "couverture": entier 0-10,
+    "recul": entier 0-10,
+    "epaisseur": entier 0-10,
+    "uniformite": entier 0-10
+  },
   "verdict": "titre court du phénomène observé (ex: 'Recul fronto-temporal débutant')",
   "subtitle": "une phrase encourageante et orientée soin",
-  "severity": "Légère | Modérée | Marquée",
   "zone": "zone analysée en clair",
-  "densityIndex": nombre entier 0-100 (indice indicatif de densité apparente),
   "stage": "Précoce | Précoce à modéré | Modéré | Installé",
   "hairType": "Raides | Ondulés | Bouclés | Crépus",
   "follicles": nombre entier (estimation indicative de follicules dans le cadre),
@@ -31,18 +37,17 @@ Réponds STRICTEMENT en JSON valide, sans texte autour, sans balises Markdown, a
   "analysis": "UN paragraphe d'analyse réel et personnalisé (3 à 5 phrases), rédigé à partir de CE qui est visible sur la photo ET des réponses du questionnaire (zone, ancienneté, âge, type, objectif). Concret, bienveillant, orienté soin. Sans promesse de repousse ni terme médical."
 }
 
-Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes.
+LES 5 MESURES (obligatoires) : note chacune séparément, uniquement d'après la photo, sur la zone analysée :
+- cuirVisible : 0 = cuir chevelu invisible sous les cheveux, 5 = visible sur une partie de la zone, 10 = très visible, zone presque dégarnie
+- couverture : 10 = zone entièrement couverte de cheveux, 5 = couverture partielle, 0 = presque plus de cheveux
+- recul : 0 = ligne d'implantation nette et basse, 5 = recul net aux tempes ou au front, 10 = recul très important (si la zone est le sommet ou la densité générale, note l'éclaircissement de cette zone)
+- epaisseur : 10 = cheveux épais et denses, 5 = moyens, 0 = très fins
+- uniformite : 10 = densité homogène sur toute la zone, 0 = très irrégulière
+Regarde vraiment la photo : ne mets pas des notes moyennes par prudence, utilise toute l'échelle de 0 à 10. Le score de densité sur 100 est calculé à partir de ces 5 notes : ne le donne pas.
 
-CALIBRAGE DE densityIndex (obligatoire) : note ce que tu VOIS sur la photo, avec cette grille :
-- 85-100 : densité pleine, cuir chevelu quasi invisible sur la zone
-- 70-84 : bonne densité, cuir chevelu visible seulement par endroits
-- 55-69 : densité moyenne, cuir chevelu visible sur une partie de la zone
-- 40-54 : zone nettement clairsemée, cuir chevelu bien visible
-- 0-39 : zone très clairsemée
-Choisis d'abord la tranche d'après la photo, puis un entier précis à l'intérieur de la tranche selon les détails observés et les réponses (ancienneté, zone). Utilise toute l'échelle : n'utilise pas une valeur « par défaut » ou passe-partout, deux photos différentes doivent donner des notes différentes.
-COHÉRENCE : severity doit correspondre à densityIndex (Légère si 70 ou plus, Modérée de 50 à 69, Marquée en dessous de 50), et l'indicateur « Densité apparente » doit afficher exactement densityIndex / 100.
+Donne 4 à 6 "indicators" pertinents (ex: Densité apparente, Ligne d'implantation, État du cuir chevelu, Uniformité, Texture, Zone la plus marquée) avec des valeurs courtes et parlantes. Pour « Densité apparente », mets "à calculer" : la valeur sera remplacée.
 
-IMPORTANT, langue de réponse : rédige TOUTES les valeurs de texte (verdict, subtitle, severity, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.
+IMPORTANT, langue de réponse : rédige TOUTES les valeurs de texte (observation, verdict, subtitle, zone, stage, hairType, indicators, analysis) dans la langue demandée par l'utilisateur (voir "Langue :" dans le message). "fr" = français, "en" = anglais, "es" = espagnol, "de" = allemand.
 TYPOGRAPHIE : n'utilise JAMAIS de tiret long ni de tiret moyen dans les textes. Fais des phrases courtes, avec des virgules, des points ou des deux-points.`;
 
 // Pas de tiret long ni moyen dans les textes générés : ça fait « texte d'IA ».
@@ -56,6 +61,23 @@ function noDash(v) {
   if (v && typeof v === 'object') { Object.keys(v).forEach(k => { v[k] = noDash(v[k]); }); return v; }
   return v;
 }
+
+// Indice de densité calculé à partir des 5 mesures de l'IA (0-10 chacune).
+// Une note globale demandée directement retombe presque toujours sur la même valeur ;
+// des mesures concrètes et séparées donnent un résultat qui suit vraiment la photo.
+function densityFromMeasures(m) {
+  if (!m || typeof m !== 'object') return null;
+  const n = k => { const v = Number(m[k]); return Number.isFinite(v) ? Math.max(0, Math.min(10, v)) : null; };
+  const cv = n('cuirVisible'), co = n('couverture'), re = n('recul'), ep = n('epaisseur'), un = n('uniformite');
+  if ([cv, co, re, ep, un].some(x => x === null)) return null;
+  const s = 0.32 * (10 - cv) + 0.30 * co + 0.16 * (10 - re) + 0.12 * ep + 0.10 * un;   // sur 10
+  return Math.max(5, Math.min(98, Math.round(s * 10)));
+}
+const SEVERITY = {
+  fr: ['Légère', 'Modérée', 'Marquée'], en: ['Mild', 'Moderate', 'Marked'],
+  es: ['Leve', 'Moderada', 'Marcada'], de: ['Leicht', 'Mäßig', 'Ausgeprägt']
+};
+const DENS_LABEL = { fr: 'Densité apparente', en: 'Apparent density', es: 'Densidad aparente', de: 'Sichtbare Dichte' };
 
 const STAGE_HINT = {
   fr: 'Précoce | Précoce à modéré | Modéré | Installé',
@@ -99,7 +121,7 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',   // rapide + pas cher pour le volume gratuit
-        max_tokens: 700,
+        max_tokens: 1000,
         system: SYSTEM,
         messages: [{
           role: 'user',
@@ -134,11 +156,25 @@ module.exports = async (req, res) => {
 
     // garde-fous de type
     parsed = noDash(parsed);
-    parsed.densityIndex = parseInt(parsed.densityIndex, 10) || 0;
-    parsed.densityIndex = Math.max(0, Math.min(100, parsed.densityIndex));
+    const unusable = /inexploitable|unusable|not usable|inutilizable|no utilizable|unbrauchbar/i.test(String(parsed.verdict || ''));
+    const fromM = unusable ? 0 : densityFromMeasures(parsed.mesures);
+    parsed.densityIndex = fromM !== null ? fromM : Math.max(0, Math.min(100, parseInt(parsed.densityIndex, 10) || 0));
+    if (unusable) parsed.severity = '';
+    // sévérité toujours cohérente avec l'indice (même grille partout)
+    const di = parsed.densityIndex, sv = SEVERITY[L];
+    if (di > 0) parsed.severity = di >= 70 ? sv[0] : (di >= 50 ? sv[1] : sv[2]);
+    console.log('analyze', JSON.stringify({ zone: answers.zone, duree: answers.duree, mesures: parsed.mesures || null, densityIndex: di }));
+    delete parsed.mesures; delete parsed.observation;
     parsed.follicles = parseInt(parsed.follicles, 10) || 0;
     if (!Array.isArray(parsed.indicators)) parsed.indicators = [];
     parsed.indicators = parsed.indicators.filter(x => x && x.k && x.v).slice(0, 6);
+    // l'indicateur « Densité apparente » affiche toujours l'indice calculé
+    if (parsed.densityIndex > 0) {
+      const i = parsed.indicators.findIndex(x => /densit|density|dichte/i.test(x.k));
+      const item = { k: i >= 0 ? parsed.indicators[i].k : DENS_LABEL[L], v: parsed.densityIndex + ' / 100' };
+      if (i >= 0) parsed.indicators[i] = item; else parsed.indicators.unshift(item);
+      parsed.indicators = parsed.indicators.slice(0, 6);
+    }
     if (typeof parsed.analysis !== 'string') parsed.analysis = '';
     if (typeof parsed.severity !== 'string') parsed.severity = '';
 
